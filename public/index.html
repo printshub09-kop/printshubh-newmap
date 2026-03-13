@@ -1,1 +1,560 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Land Boundary Report — PrintsHubh.shop</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root{
+  --blue:#1a56db;--blue-dark:#1040b0;--blue-pale:#eff6ff;
+  --white:#fff;--gray-50:#f8fafc;--gray-100:#f1f5f9;
+  --gray-200:#e2e8f0;--gray-400:#94a3b8;--gray-500:#64748b;
+  --gray-700:#334155;--gray-900:#0f172a;--wa:#25d366;
+  --green:#16a34a;--red:#dc2626;--yellow:#f59e0b;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--gray-50);color:var(--gray-900)}
+
+/* NAV */
+nav{background:white;border-bottom:1px solid var(--gray-200);height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:500a;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.nav-brand{display:flex;align-items:center;gap:9px;text-decoration:none}
+.nav-logo{width:36px;height:36px;background:linear-gradient(135deg,var(--blue),var(--blue-dark));border-radius:9px;display:flex;align-items:center;justify-content:center}
+.nav-logo svg{width:20px;height:20px}
+.nav-name{font-size:18px;font-weight:800;color:var(--gray-900)}.nav-name span{color:var(--blue)}
+.nav-live{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--green);background:#dcfce7;padding:6px 12px;border-radius:20px;border:1px solid #bbf7d0}
+.nav-live .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* LAYOUT */
+.wrap{max-width:900px;margin:28px auto;padding:0 18px}
+h1{font-size:26px;font-weight:800;margin-bottom:4px}
+.sub{font-family:'Noto Sans Devanagari',sans-serif;font-size:14px;color:var(--gray-500);margin-bottom:22px}
+
+/* FORM */
+.card{background:white;border-radius:14px;border:1.5px solid var(--gray-200);padding:26px;margin-bottom:22px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.card-title{font-size:14px;font-weight:800;color:var(--gray-700);margin-bottom:16px;text-transform:uppercase;letter-spacing:.5px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg label{font-size:11px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.5px}
+.fg input,.fg select{padding:10px 13px;border:1.5px solid var(--gray-200);border-radius:9px;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;color:var(--gray-900);outline:none;transition:border-color .15s}
+.fg input:focus,.fg select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,86,219,.08)}
+.fg select option{font-size:13px}
+
+/* STATUS */
+.status-bar{display:none;align-items:center;gap:10px;padding:13px 16px;border-radius:10px;margin-bottom:16px;font-size:14px;font-weight:600}
+.status-loading{background:#eff6ff;border:1px solid #bfdbfe;color:var(--blue)}
+.status-success{background:#dcfce7;border:1px solid #bbf7d0;color:var(--green)}
+.status-error{background:#fee2e2;border:1px solid #fecaca;color:var(--red)}
+.spinner{width:18px;height:18px;border:2.5px solid rgba(26,86,219,.2);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* BUTTON */
+.fetch-btn{width:100%;margin-top:18px;padding:14px;background:linear-gradient(135deg,var(--blue),var(--blue-dark));color:white;border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:9px;transition:all .15s;box-shadow:0 4px 14px rgba(26,86,219,.25)}
+.fetch-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(26,86,219,.3)}
+.fetch-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+
+/* REPORT */
+#reportSection{display:none}
+#printReport{background:white;border-radius:14px;border:1.5px solid var(--gray-200);overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);margin-bottom:20px}
+.rpt-header{background:linear-gradient(135deg,var(--gray-900),#1e3a8a,var(--blue));padding:18px 24px;display:flex;align-items:center;justify-content:space-between}
+.rpt-brand .rname{font-size:21px;font-weight:900;color:white}.rpt-brand .rname span{color:#93c5fd}
+.rpt-brand .rsub{font-size:10px;color:rgba(255,255,255,.6);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.rpt-meta{text-align:right;font-size:12px;color:rgba(255,255,255,.75);line-height:1.8}
+.rpt-meta strong{color:white}
+.rpt-source-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(22,163,74,.25);border:1px solid rgba(22,163,74,.4);padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;color:#34d399;margin-top:5px}
+
+/* MAP */
+#reportMap{width:100%;height:520px;position:relative;background:#0f172a}
+.compass{position:absolute;z-index:400;pointer-events:none;font-weight:900;font-size:13px;color:white;text-shadow:0 0 8px rgba(0,0,0,.9),0 0 16px rgba(0,0,0,.8);letter-spacing:1px}
+.cN{top:12px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:2px}
+.cS{bottom:12px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:2px}
+.cE{right:12px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:4px}
+.cW{left:12px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:4px}
+.arrow{font-size:20px;line-height:1}
+
+/* TABLES */
+.rpt-tables{padding:18px 22px}
+table{width:100%;border-collapse:collapse;margin-bottom:14px}
+table th{background:var(--gray-900);color:white;padding:9px 12px;font-size:12px;font-weight:700;text-align:center}
+table td{padding:8px 12px;text-align:center;font-size:13px;border:1px solid var(--gray-200)}
+table tr:nth-child(even) td{background:var(--gray-50)}
+
+.info-grid{display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:0;border:1px solid var(--gray-200);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.ig-col{}
+.ig-col-hd{background:var(--gray-900);color:white;padding:9px 12px;font-size:11px;font-weight:700;text-align:center;text-transform:uppercase;letter-spacing:.5px}
+.ig-row{padding:8px 12px;border-top:1px solid var(--gray-200);display:flex;justify-content:space-between;align-items:center;font-size:13px}
+.ig-row .lbl{color:var(--gray-500);font-size:12px;font-weight:600}
+.ig-row .val{font-weight:700;color:var(--gray-900)}
+.ig-row .val.blue{color:var(--blue)}
+.dir-pill{font-size:10px;font-weight:800;padding:2px 8px;border-radius:4px;min-width:46px;text-align:center}
+.dN{background:#dbeafe;color:#1d4ed8}
+.dE{background:#fef3c7;color:#92400e}
+.dS{background:#dcfce7;color:#15803d}
+.dW{background:#fce7f3;color:#9d174d}
+
+.rpt-disclaimer{background:#fffbeb;border-top:1px solid #fde68a;padding:12px 22px;font-size:11px;color:#78350f;line-height:1.7}
+
+/* ACTION BAR */
+.action-bar{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.btn-pdf{flex:1;min-width:150px;padding:13px;background:var(--blue);color:white;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;transition:all .15s}
+.btn-pdf:hover{background:var(--blue-dark)}
+.btn-wa{flex:1;min-width:150px;padding:13px;background:var(--wa);color:white;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;transition:all .15s}
+.btn-wa:hover{filter:brightness(1.05)}
+
+/* PRINT */
+@media print{
+  nav,.card,.action-bar,h1,.sub,#statusBar{display:none!important}
+  .wrap{margin:0;padding:0;max-width:100%}
+  #printReport{border:none;border-radius:0;box-shadow:none;margin:0}
+  #reportMap{height:500px}
+  body{background:white}
+  .rpt-header,.ig-col-hd,table th{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .rpt-disclaimer{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #reportSection{display:block!important}
+}
+
+@media(max-width:600px){
+  .info-grid{grid-template-columns:1fr}
+  nav{padding:0 14px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="/">
+    <div class="nav-logo">
+      <svg viewBox="0 0 22 22" fill="none"><path d="M11 2.5L4 8v11h14V8L11 2.5z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/><rect x="7.5" y="12" width="3" height="7" rx="1" fill="white"/><rect x="11.5" y="12" width="3" height="7" rx="1" fill="white"/></svg>
+    </div>
+    <span class="nav-name">Prints<span>Hubh</span></span>
+  </a>
+  <div class="nav-live"><div class="dot"></div>Live BhuNaksha Data</div>
+</nav>
+
+<div class="wrap">
+  <h1>📍 Land Boundary Report</h1>
+  <p class="sub">जिल्हा, तालुका, गाव, गट नंबर टाका — Real BhuNaksha वरून actual boundary report तयार होईल</p>
+
+  <div class="card">
+    <div class="card-title">📋 Plot माहिती</div>
+    <div class="grid">
+      <div class="fg">
+        <label>जिल्हा (District) *</label>
+        <select id="districtSel">
+          <option value="">-- जिल्हा निवडा --</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>तालुका (Taluka) *</label>
+        <select id="talukaSel" disabled>
+          <option value="">-- आधी जिल्हा निवडा --</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>गाव (Village) *</label>
+        <select id="villageSel" disabled>
+          <option value="">-- आधी तालुका निवडा --</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>गट / Survey नंबर *</label>
+        <input type="text" id="surveyNo" placeholder="उदा: 9/1, 45, 123/A">
+      </div>
+    </div>
+
+    <div id="statusBar" class="status-bar">
+      <div class="spinner" id="statusSpinner" style="display:none"></div>
+      <span id="statusText"></span>
+    </div>
+
+    <button class="fetch-btn" id="fetchBtn" onclick="fetchReport()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      Real BhuNaksha वरून Report तयार करा
+    </button>
+  </div>
+
+  <!-- REPORT OUTPUT -->
+  <div id="reportSection">
+    <div class="action-bar">
+      <button class="btn-pdf" onclick="window.print()">🖨️ Print / PDF Download</button>
+      <a id="waBtn" href="#" class="btn-wa" target="_blank">💬 WhatsApp वर Order पाठवा</a>
+    </div>
+
+    <div id="printReport">
+      <div class="rpt-header">
+        <div class="rpt-brand">
+          <div class="rname">Prints<span>Hubh</span>.shop</div>
+          <div class="rsub">Maharashtra Land Report Service</div>
+          <div class="rpt-source-badge">✓ Live BhuNaksha Data</div>
+        </div>
+        <div class="rpt-meta">
+          <div id="rDateLine"></div>
+          <strong>WhatsApp: +91 70838 11355</strong>
+          <div style="font-size:10px;color:rgba(255,255,255,.45);margin-top:2px">Source: mahabhuinaksha.com</div>
+        </div>
+      </div>
+
+      <!-- MAP with compass -->
+      <div style="position:relative">
+        <div id="reportMap"></div>
+        <div class="compass cN"><span class="arrow">↑</span>NORTH</div>
+        <div class="compass cS"><span class="arrow">↓</span>SOUTH</div>
+        <div class="compass cE">EAST<span class="arrow">→</span></div>
+        <div class="compass cW"><span class="arrow">←</span>WEST</div>
+      </div>
+
+      <!-- TABLES -->
+      <div class="rpt-tables">
+        <table>
+          <tr><th>Survey No.</th><th>Village</th><th>Taluka</th><th>District</th><th>State</th></tr>
+          <tr>
+            <td id="tSurvey"></td><td id="tVillage"></td>
+            <td id="tTaluka"></td><td id="tDistrict"></td><td>Maharashtra</td>
+          </tr>
+        </table>
+
+        <div class="info-grid">
+          <!-- Area -->
+          <div class="ig-col">
+            <div class="ig-col-hd">📐 Area</div>
+            <div class="ig-row"><span class="lbl">Sq. Meter</span><span class="val" id="tSqm">—</span></div>
+            <div class="ig-row"><span class="lbl">Acre</span><span class="val" id="tAcre">—</span></div>
+            <div class="ig-row"><span class="lbl">Guntha</span><span class="val" id="tGuntha">—</span></div>
+            <div class="ig-row"><span class="lbl">Hector-R</span><span class="val" id="tHector">—</span></div>
+          </div>
+          <!-- Direction -->
+          <div class="ig-col">
+            <div class="ig-col-hd">🧭 Neighboring Survey Nos.</div>
+            <div class="ig-row"><span class="dir-pill dN">NORTH</span><span class="val" id="tN">—</span></div>
+            <div class="ig-row"><span class="dir-pill dE">EAST</span><span class="val" id="tE">—</span></div>
+            <div class="ig-row"><span class="dir-pill dS">SOUTH</span><span class="val" id="tS">—</span></div>
+            <div class="ig-row"><span class="dir-pill dW">WEST</span><span class="val" id="tW">—</span></div>
+          </div>
+          <!-- Coords + Length -->
+          <div class="ig-col">
+            <div class="ig-col-hd">📍 Details</div>
+            <div class="ig-row"><span class="lbl">Perimeter</span><span class="val" id="tPerim">—</span></div>
+            <div class="ig-row"><span class="lbl blue" style="color:var(--blue);font-weight:700">Google Map</span></div>
+            <div class="ig-row"><span class="lbl">Latitude</span><span class="val blue" id="tLat">—</span></div>
+            <div class="ig-row"><span class="lbl">Longitude</span><span class="val blue" id="tLng">—</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rpt-disclaimer">
+        <strong>Disclaimer:</strong> Area is calculated based on geometry from BhuNaksha (mahabhuinaksha.com) and it may vary from area mentioned in 7/12 document. PrintsHubh does not guarantee correctness of data. This is for information purposes only and cannot be used for any legal purpose.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = ''; // Same origin — Render server
+
+// ── Load Districts ─────────────────────────────────────────
+async function loadDistricts() {
+  try {
+    const r = await fetch(`${API}/api/districts`);
+    const d = await r.json();
+    const sel = document.getElementById('districtSel');
+    d.data.forEach(item => {
+      const opt = document.createElement('option');
+      opt.value = item.code;
+      opt.dataset.name = item.name;
+      opt.textContent = toMarathi(item.name);
+      sel.appendChild(opt);
+    });
+  } catch(e) {
+    showStatus('error', 'Districts load failed: ' + e.message);
+  }
+}
+
+document.getElementById('districtSel').addEventListener('change', async function() {
+  const code = this.value;
+  const name = this.options[this.selectedIndex]?.dataset.name || '';
+  const tSel = document.getElementById('talukaSel');
+  const vSel = document.getElementById('villageSel');
+  tSel.innerHTML = '<option value="">Loading...</option>';
+  tSel.disabled = true;
+  vSel.innerHTML = '<option value="">-- आधी तालुका निवडा --</option>';
+  vSel.disabled = true;
+  if (!code) return;
+
+  showStatus('loading', `${name} जिल्ह्याचे तालुके लोड होत आहेत...`);
+  try {
+    const r = await fetch(`${API}/api/talukas?districtCode=${code}`);
+    const d = await r.json();
+    tSel.innerHTML = '<option value="">-- तालुका निवडा --</option>';
+    if (d.success && d.data.length) {
+      d.data.sort((a,b) => a.name.localeCompare(b.name)).forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t.code; opt.textContent = t.name;
+        tSel.appendChild(opt);
+      });
+      tSel.disabled = false;
+      hideStatus();
+    } else {
+      showStatus('error', 'तालुके मिळाले नाहीत');
+    }
+  } catch(e) {
+    showStatus('error', 'Taluka load error: ' + e.message);
+  }
+});
+
+document.getElementById('talukaSel').addEventListener('change', async function() {
+  const distCode = document.getElementById('districtSel').value;
+  const talukaCode = this.value;
+  const vSel = document.getElementById('villageSel');
+  vSel.innerHTML = '<option value="">Loading...</option>';
+  vSel.disabled = true;
+  if (!talukaCode) return;
+
+  showStatus('loading', 'गावे लोड होत आहेत...');
+  try {
+    const r = await fetch(`${API}/api/villages?districtCode=${distCode}&talukaCode=${talukaCode}`);
+    const d = await r.json();
+    vSel.innerHTML = '<option value="">-- गाव निवडा --</option>';
+    if (d.success && d.data.length) {
+      d.data.sort((a,b) => a.name.localeCompare(b.name)).forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = v.code; opt.textContent = v.name;
+        vSel.appendChild(opt);
+      });
+      vSel.disabled = false;
+      hideStatus();
+    } else {
+      showStatus('error', 'गावे मिळाली नाहीत');
+    }
+  } catch(e) {
+    showStatus('error', 'Village load error: ' + e.message);
+  }
+});
+
+// ── Fetch Real Report ───────────────────────────────────────
+let reportMap = null;
+
+async function fetchReport() {
+  const districtCode = document.getElementById('districtSel').value;
+  const districtName = document.getElementById('districtSel').options[document.getElementById('districtSel').selectedIndex]?.dataset.name || '';
+  const talukaCode   = document.getElementById('talukaSel').value;
+  const talukaNm     = document.getElementById('talukaSel').options[document.getElementById('talukaSel').selectedIndex]?.textContent || '';
+  const villageCode  = document.getElementById('villageSel').value;
+  const villageNm    = document.getElementById('villageSel').options[document.getElementById('villageSel').selectedIndex]?.textContent || '';
+  const surveyNo     = document.getElementById('surveyNo').value.trim();
+
+  if (!districtCode || !talukaCode || !villageCode || !surveyNo) {
+    showStatus('error', '⚠️ सर्व माहिती भरणे आवश्यक आहे — जिल्हा, तालुका, गाव, गट नंबर');
+    return;
+  }
+
+  document.getElementById('fetchBtn').disabled = true;
+  showStatus('loading', `⏳ BhuNaksha वरून Survey No. ${surveyNo} ची boundary शोधत आहे...`);
+
+  try {
+    // Fetch main plot + neighbors
+    const [mainRes, neighborRes] = await Promise.allSettled([
+      fetch(`${API}/api/plot-boundary?districtCode=${districtCode}&talukaCode=${talukaCode}&villageCode=${villageCode}&surveyNo=${encodeURIComponent(surveyNo)}`).then(r=>r.json()),
+      fetch(`${API}/api/neighboring-plots?districtCode=${districtCode}&talukaCode=${talukaCode}&villageCode=${villageCode}&surveyNo=${encodeURIComponent(surveyNo)}`).then(r=>r.json())
+    ]);
+
+    const main = mainRes.status === 'fulfilled' ? mainRes.value : null;
+    const nb   = neighborRes.status === 'fulfilled' ? neighborRes.value : null;
+
+    if (!main || !main.success) {
+      showStatus('error', `❌ ${main?.error || 'Plot boundary मिळाली नाही'}`);
+      document.getElementById('fetchBtn').disabled = false;
+      return;
+    }
+
+    showStatus('success', `✅ Survey No. ${surveyNo} ची real boundary मिळाली! Report तयार होत आहे...`);
+
+    // Fill metadata
+    const meta = main.metadata || {};
+    const sqm   = parseFloat(meta.areaSqMtr) || 0;
+    const acre  = (sqm / 4046.86).toFixed(4);
+    const guntha= (sqm / 101.17).toFixed(2);
+    const hectR = sqmToHectR(sqm);
+    const center = getGeojsonCenter(main.geojson);
+
+    document.getElementById('tSurvey').textContent  = surveyNo;
+    document.getElementById('tVillage').textContent = meta.village || villageNm;
+    document.getElementById('tTaluka').textContent  = meta.taluka  || talukaNm;
+    document.getElementById('tDistrict').textContent= meta.district|| districtName;
+    document.getElementById('tSqm').textContent     = sqm ? sqm.toLocaleString('en-IN') + ' Sq.Mtr' : '—';
+    document.getElementById('tAcre').textContent    = sqm ? acre + ' Acre' : '—';
+    document.getElementById('tGuntha').textContent  = sqm ? guntha + ' Guntha' : '—';
+    document.getElementById('tHector').textContent  = sqm ? hectR : '—';
+    document.getElementById('tLat').textContent     = center ? center[1].toFixed(6) : '—';
+    document.getElementById('tLng').textContent     = center ? center[0].toFixed(6) : '—';
+    document.getElementById('rDateLine').textContent = new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+
+    // Calculate perimeter
+    const perim = calcPerimeter(main.geojson);
+    document.getElementById('tPerim').textContent = perim ? perim.toFixed(2) + ' Mtr' : '—';
+
+    // Calculate and fill neighboring survey numbers by direction
+    if (nb && nb.success && nb.neighbors) {
+      const dirs = getNeighborsByDirection(main.geojson, nb.neighbors, surveyNo);
+      document.getElementById('tN').textContent = dirs.N.join(', ') || '—';
+      document.getElementById('tE').textContent = dirs.E.join(', ') || '—';
+      document.getElementById('tS').textContent = dirs.S.join(', ') || '—';
+      document.getElementById('tW').textContent = dirs.W.join(', ') || '—';
+    }
+
+    // WhatsApp button
+    const waText = encodeURIComponent(`📍 Land Report\nSurvey No: ${surveyNo}\nGaon: ${villageNm}, ${talukaNm}, ${districtName}\nArea: ${sqm ? sqm.toLocaleString('en-IN') + ' Sq.Mtr' : '?'}\nPrintshubh.shop`);
+    document.getElementById('waBtn').href = `https://wa.me/?text=${waText}`;
+
+    // Show section
+    document.getElementById('reportSection').style.display = 'block';
+    setTimeout(() => {
+      document.getElementById('reportSection').scrollIntoView({behavior:'smooth'});
+      initMap(main.geojson, nb?.neighbors || [], surveyNo);
+    }, 100);
+
+  } catch(err) {
+    showStatus('error', '❌ Error: ' + err.message);
+  }
+  document.getElementById('fetchBtn').disabled = false;
+}
+
+// ── MAP ─────────────────────────────────────────────────────
+function initMap(mainGeoJson, neighbors, surveyNo) {
+  if (reportMap) { reportMap.remove(); reportMap = null; }
+
+  reportMap = L.map('reportMap', {zoomControl:true}).setView([19.7515, 75.7139], 15);
+
+  // Satellite base
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    attribution:'Imagery ©2024 Maxar | BhuNaksha Maharashtra',maxZoom:21
+  }).addTo(reportMap);
+
+  // Main plot — YELLOW
+  const mainLayer = L.geoJSON(mainGeoJson, {
+    style:{color:'#FFD700',weight:3.5,fillColor:'rgba(255,215,0,0.18)',fillOpacity:1}
+  }).addTo(reportMap);
+
+  // Label
+  const mc = mainLayer.getBounds().getCenter();
+  L.marker(mc,{icon:L.divIcon({
+    className:'',
+    html:`<div style="background:rgba(0,0,0,.75);color:#FFD700;font-weight:900;font-size:16px;padding:4px 9px;border-radius:5px;white-space:nowrap;border:1.5px solid #FFD700">${surveyNo}</div>`,
+    iconAnchor:[20,14]
+  })}).addTo(reportMap);
+
+  // Neighboring plots — RED
+  neighbors.forEach(f => {
+    if (f.properties?.SURVEY_NO === surveyNo) return;
+    L.geoJSON(f, {style:{color:'#ff3333',weight:2,fillColor:'rgba(255,0,0,0.06)',fillOpacity:1}}).addTo(reportMap);
+    try {
+      const nc = L.geoJSON(f).getBounds().getCenter();
+      L.marker(nc,{icon:L.divIcon({
+        className:'',
+        html:`<div style="background:rgba(0,0,0,.65);color:white;font-size:12px;font-weight:700;padding:2px 6px;border-radius:3px">${f.properties.SURVEY_NO||''}</div>`,
+        iconAnchor:[10,10]
+      })}).addTo(reportMap);
+    } catch(e){}
+  });
+
+  reportMap.fitBounds(mainLayer.getBounds().pad(0.4));
+}
+
+// ── UTILS ───────────────────────────────────────────────────
+function sqmToHectR(sqm) {
+  if (!sqm) return '—';
+  const hectares = sqm / 10000;
+  const h = Math.floor(hectares);
+  const r = Math.floor((hectares - h) * 100);
+  const remainSqm = Math.round(sqm - h*10000 - r*100);
+  return `${h} H ${r} R ${remainSqm} Sq.Mtr`;
+}
+
+function getGeojsonCenter(gj) {
+  try {
+    const coords = [];
+    const flat = (arr) => { if(typeof arr[0]==='number') coords.push(arr); else arr.forEach(flat); };
+    flat(gj.geometry.coordinates);
+    if (!coords.length) return null;
+    const lng = coords.reduce((s,c)=>s+c[0],0)/coords.length;
+    const lat = coords.reduce((s,c)=>s+c[1],0)/coords.length;
+    return [lng, lat];
+  } catch(e) { return null; }
+}
+
+function calcPerimeter(gj) {
+  try {
+    const R = 6371000;
+    let total = 0;
+    const coords = gj.geometry.type === 'Polygon'
+      ? gj.geometry.coordinates[0]
+      : gj.geometry.coordinates[0][0];
+    for (let i = 0; i < coords.length-1; i++) {
+      const [lng1,lat1] = coords[i], [lng2,lat2] = coords[i+1];
+      const dLat=(lat2-lat1)*Math.PI/180, dLng=(lng2-lng1)*Math.PI/180;
+      const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+      total += R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+    }
+    return total;
+  } catch(e) { return null; }
+}
+
+function getNeighborsByDirection(mainGj, neighbors, mySurvey) {
+  const dirs = {N:[], E:[], S:[], W:[]};
+  const mc = getGeojsonCenter(mainGj);
+  if (!mc) return dirs;
+  neighbors.forEach(f => {
+    if (f.properties?.SURVEY_NO === String(mySurvey)) return;
+    const nc = getGeojsonCenter(f);
+    if (!nc) return;
+    const dlat = nc[1] - mc[1], dlng = nc[0] - mc[0];
+    const sn = f.properties?.SURVEY_NO || '?';
+    if (Math.abs(dlat) > Math.abs(dlng)) {
+      dlat > 0 ? dirs.N.push(sn) : dirs.S.push(sn);
+    } else {
+      dlng > 0 ? dirs.E.push(sn) : dirs.W.push(sn);
+    }
+  });
+  return dirs;
+}
+
+function toMarathi(name) {
+  const map = {
+    'NASHIK':'नाशिक','PUNE':'पुणे','THANE':'ठाणे','NAGPUR':'नागपूर',
+    'KOLHAPUR':'कोल्हापूर','SOLAPUR':'सोलापूर','SATARA':'सातारा',
+    'SANGLI':'सांगली','AHMEDNAGAR':'अहमदनगर','JALGAON':'जळगाव',
+    'DHULE':'धुळे','NANDURBAR':'नंदूरबार','RAIGAD':'रायगड',
+    'RATNAGIRI':'रत्नागिरी','SINDHUDURG':'सिंधुदुर्ग','PALGHAR':'पालघर',
+    'AMRAVATI':'अमरावती','BULDHANA':'बुलढाणा','AKOLA':'अकोला',
+    'WASHIM':'वाशीम','YAVATMAL':'यवतमाळ','WARDHA':'वर्धा',
+    'BHANDARA':'भंडारा','GONDIA':'गोंदिया','CHANDRAPUR':'चंद्रपूर',
+    'GADCHIROLI':'गडचिरोली','LATUR':'लातूर','NANDED':'नांदेड',
+    'PARBHANI':'परभणी','HINGOLI':'हिंगोली','BEED':'बीड',
+    'DHARASHIV':'धाराशिव','JALNA':'जालना',
+    'CHHATRAPATI SAMBHAJINAGAR':'छ.संभाजीनगर',
+    'MUMBAI CITY':'मुंबई शहर','MUMBAI SUBURBAN':'मुंबई उपनगर'
+  };
+  return (map[name] || name) + ' (' + name + ')';
+}
+
+function showStatus(type, msg) {
+  const bar = document.getElementById('statusBar');
+  const txt = document.getElementById('statusText');
+  const spin = document.getElementById('statusSpinner');
+  bar.className = 'status-bar status-' + type;
+  bar.style.display = 'flex';
+  txt.textContent = msg;
+  spin.style.display = type === 'loading' ? 'block' : 'none';
+}
+function hideStatus() {
+  document.getElementById('statusBar').style.display = 'none';
+}
+
+// Init
+loadDistricts();
+</script>
+</body>
+</html>
 
