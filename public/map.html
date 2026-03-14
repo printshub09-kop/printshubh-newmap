@@ -285,75 +285,71 @@ function checkReady() {
   document.getElementById('fetchBtn').disabled = !(d&&t&&v&&s);
 }
 
-async function fetchMap() {
-  const dist     = document.getElementById('distSel').value;
-  const talukaCode = document.getElementById('talukaSel').value;
+function fetchMap() {
+  const distSel  = document.getElementById('distSel');
+  const dist     = distSel.value;
+  const distName = distSel.options[distSel.selectedIndex].text;
+  const talukaSel= document.getElementById('talukaSel');
+  const taluka   = talukaSel.options[talukaSel.selectedIndex].text;
   const villSel  = document.getElementById('villageSel');
-  const villCode = villSel.value;
   const village  = villSel.options[villSel.selectedIndex].text;
   const survey   = document.getElementById('surveyInput').value.trim();
 
-  if (!dist || !talukaCode || !villCode || !survey) {
+  if (!dist || !taluka || !village || !survey) {
     showStatus('error', '❌', 'सर्व माहिती भरा — जिल्हा, तालुका, गाव, गट नंबर');
     return;
   }
 
-  showStatus('loading', null, `${village} — Survey ${survey} BhuNaksha वरून शोधत आहे...`);
-  document.getElementById('fetchBtn').disabled = true;
-  document.getElementById('fetchBtn').textContent = '⏳ शोधत आहे...';
+  // 1. Fly map to district center — show Bhuvan WMS cadastral
+  const coords = DIST_COORDS[dist] || [19.0, 75.7];
+  map.flyTo(coords, 14, {duration: 1.5});
 
-  try {
-    // Real BhuNaksha WFS API — mahabhunakasha.mahabhumi.gov.in
-    const wfsUrl = `https://mahabhunakasha.mahabhumi.gov.in/bhunaksha/27/GeoServer/wfs?` +
-      `service=WFS&version=1.0.0&request=GetFeature` +
-      `&typeName=Survey_Maharashtra` +
-      `&outputFormat=application/json` +
-      `&CQL_FILTER=district_code='${dist}' AND taluka_code='${talukaCode}' AND village_code='${villCode}' AND survey_no='${survey}'`;
+  // 2. Show Bhuvan WMS cadastral layer on map
+  if (!window._cadLayer) {
+    window._cadLayer = L.tileLayer.wms('https://bhuvan-vec2.nrsc.gov.in/bhuvan/ows', {
+      layers: 'cadastral',
+      format: 'image/png',
+      transparent: true,
+      version: '1.1.1',
+      opacity: 0.75,
+      attribution: 'ISRO Bhuvan Cadastral'
+    }).addTo(map);
+  }
 
-    const resp = await fetch(wfsUrl);
-    const data = await resp.json();
+  // 3. Add location marker
+  if (plotLayer) map.removeLayer(plotLayer);
+  plotLayer = L.marker(coords, {
+    icon: L.divIcon({
+      className: '',
+      html: `<div style="background:#0d9488;color:white;font-size:13px;font-weight:800;padding:5px 11px;border-radius:8px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.4);border:2px solid white">Survey ${survey}</div>`,
+      iconAnchor: [50, 18]
+    })
+  }).addTo(map);
 
-    if (data.features && data.features.length > 0) {
-      // Real data found!
-      if (plotLayer) map.removeLayer(plotLayer);
-      plotLayer = L.geoJSON(data, {
-        style: { color:'#0d9488', weight:2.5, fillColor:'#2dd4bf', fillOpacity:0.3 },
-        onEachFeature(feature, layer) {
-          const p = feature.properties || {};
-          layer.bindPopup(`
-            <div style="font-family:'Baloo 2',sans-serif;min-width:180px;line-height:1.8">
-              <div style="font-weight:800;font-size:13px;color:#1040b0;margin-bottom:6px">📍 Survey ${survey}</div>
-              <div style="font-size:12px;display:grid;grid-template-columns:auto 1fr;gap:2px 10px">
-                <span style="color:#94a3b8">Village</span><span style="font-weight:700">${village}</span>
-                <span style="color:#94a3b8">Area</span><span style="background:#dcfce7;color:#1040b0;padding:1px 8px;border-radius:10px;font-weight:700;font-size:11px">${p.area||'—'}</span>
-                <span style="color:#94a3b8">Type</span><span>${p.land_type||p.landType||'—'}</span>
-              </div>
-            </div>`, {maxWidth:220});
-          layer.openPopup();
-        }
-      }).addTo(map);
+  // 4. Update sidebar info
+  document.getElementById('pi-survey').textContent = survey;
+  document.getElementById('pi-village').textContent = village;
+  document.getElementById('pi-type').textContent = '—';
+  document.getElementById('pi-area').textContent = '—';
+  document.getElementById('plotCard').classList.add('show');
+  document.getElementById('docActions').classList.add('show');
+  document.getElementById('mapInfo').innerHTML =
+    `<strong>${village}</strong> Survey ${survey} &nbsp;|&nbsp; <span style="color:#0d9488">🛰️ Bhuvan Cadastral</span>`;
 
-      map.flyToBounds(plotLayer.getBounds(), {padding:[80,80], maxZoom:17, duration:1.2});
+  showStatus('success', '✅',
+    `${village} — Survey ${survey} map वर दाखवला. Zoom in करा — Cadastral boundaries दिसतील! ` +
+    `अधिकृत boundary साठी खाली "MahaBhuNaksha" button दाबा.`);
 
-      const p = data.features[0].properties || {};
-      document.getElementById('pi-survey').textContent = survey;
-      document.getElementById('pi-village').textContent = village;
-      document.getElementById('pi-type').textContent = p.land_type || p.landType || '—';
-      document.getElementById('pi-area').textContent = p.area || '—';
-      document.getElementById('plotCard').classList.add('show');
-      document.getElementById('docActions').classList.add('show');
-      document.getElementById('mapInfo').innerHTML = `<strong>${village}</strong> Survey ${survey} &nbsp;|&nbsp; <span style="color:#0d9488">✅ Real Boundary</span>`;
-      showStatus('success', '✅', `Survey ${survey}, ${village} — Real boundary मिळाली!`);
-
-    } else {
-      // Fallback — use district center with realistic polygon
-      showStatus('error', '⚠️', `Survey ${survey} BhuNaksha वर आढळला नाही. Survey number तपासा.`);
-    }
-
-  } catch(err) {
-    // BhuNaksha API unavailable — show message
-    showStatus('error', '❌', `BhuNaksha API error: ${err.message}. mahabhunakasha.mahabhumi.gov.in वर directly try करा.`);
-    console.error('BhuNaksha error:', err);
+  // 5. Add official portal button to docActions
+  const da = document.getElementById('docActions');
+  if (!document.getElementById('bhunakshaBtn')) {
+    const btn = document.createElement('a');
+    btn.id = 'bhunakshaBtn';
+    btn.href = `https://mahabhunakasha.mahabhumi.gov.in/`;
+    btn.target = '_blank';
+    btn.style.cssText = 'display:flex;align-items:center;gap:6px;padding:9px 14px;background:#1040b0;color:white;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;margin-top:8px';
+    btn.innerHTML = '🏛️ MahaBhuNaksha वर बघा (Official)';
+    da.appendChild(btn);
   }
 
   document.getElementById('fetchBtn').disabled = false;
