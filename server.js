@@ -51,15 +51,15 @@ const DISTRICT_CODES = {
 };
 
 // BhuNaksha base URL
-const BHUNAKSHA_BASE = 'https://mahabhuinaksha.com';
-const BHUNAKSHA_API  = 'https://mahabhuinaksha.com/api/v1';
+const BHUNAKSHA_BASE = 'https://bhunaksha.mahabhumi.gov.in';
+const BHUNAKSHA_API  = 'https://bhunaksha.mahabhumi.gov.in';
 
 const HEADERS = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
   'Accept': 'application/json, text/plain, */*',
   'Accept-Language': 'en-US,en;q=0.9',
-  'Origin': 'https://mahabhuinaksha.com',
-  'Referer': 'https://mahabhuinaksha.com/'
+  'Origin': 'https://bhunaksha.mahabhumi.gov.in',
+'Referer': 'https://bhunaksha.mahabhumi.gov.in/'
 };
 
 // ─── HELPER: fetch with timeout ────────────────────────────────────────────
