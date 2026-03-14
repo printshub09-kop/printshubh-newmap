@@ -3,376 +3,447 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Land Boundary Report — PrintsHubh.shop</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<title>PrintsHubh — महाराष्ट्र जमीन कागदपत्रे, ७/१२, नकाशा, TP/DP</title>
+<meta name="description" content="७/१२ उतारा, गाव नकाशा, TP/DP/Regional Map, Land Boundary Report — WhatsApp वर मागवा, घरपोच PDF मिळवा.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--blue:#1a56db;--blue-dark:#1040b0;--blue-pale:#eff6ff;--white:#fff;--gray-50:#f8fafc;--gray-200:#e2e8f0;--gray-400:#94a3b8;--gray-500:#64748b;--gray-700:#334155;--gray-900:#0f172a;--wa:#25d366;--green:#16a34a;--red:#dc2626;}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--gray-50);color:var(--gray-900)}
-nav{background:white;border-bottom:1px solid var(--gray-200);height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:500;box-shadow:0 1px 3px rgba(0,0,0,.07)}
-.nb{display:flex;align-items:center;gap:9px;text-decoration:none}
-.nl{width:36px;height:36px;background:linear-gradient(135deg,var(--blue),var(--blue-dark));border-radius:9px;display:flex;align-items:center;justify-content:center}
-.nl svg{width:20px;height:20px}
-.nn{font-size:18px;font-weight:800;color:var(--gray-900)}.nn span{color:var(--blue)}
-.nbg{font-size:11px;font-weight:700;background:#dcfce7;color:var(--green);padding:4px 10px;border-radius:20px;border:1px solid #bbf7d0}
-.wrap{max-width:960px;margin:22px auto;padding:0 18px}
-h1{font-size:24px;font-weight:800;margin-bottom:4px}
-.sub{font-family:'Noto Sans Devanagari',sans-serif;font-size:14px;color:var(--gray-500);margin-bottom:18px}
-.hiw{background:linear-gradient(135deg,#1e3a8a,var(--blue));border-radius:14px;padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.hs{display:flex;align-items:center;gap:7px;color:white;font-size:13px;font-weight:600}
-.hn{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0}
-.ha{color:rgba(255,255,255,.4);font-size:16px}
-.card{background:white;border-radius:14px;border:1.5px solid var(--gray-200);padding:22px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-.ct{font-size:12px;font-weight:800;color:var(--gray-700);margin-bottom:13px;text-transform:uppercase;letter-spacing:.5px}
-.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
-.fg{display:flex;flex-direction:column;gap:4px}
-.fg label{font-size:11px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.4px}
-.fg input,.fg select{padding:10px 12px;border:1.5px solid var(--gray-200);border-radius:9px;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;color:var(--gray-900);outline:none;transition:border-color .15s}
-.fg input:focus,.fg select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,86,219,.08)}
-.lts{display:flex;gap:9px;flex-wrap:wrap;margin-top:13px}
-.lb{display:flex;align-items:center;gap:6px;padding:7px 13px;border-radius:8px;border:1.5px solid var(--gray-200);background:white;font-size:13px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .15s;color:var(--gray-700)}
-.lb.on{border-color:var(--blue);background:var(--blue-pale);color:var(--blue)}
-.ld{width:9px;height:9px;border-radius:50%}
-.sb{width:100%;margin-top:13px;padding:13px;background:linear-gradient(135deg,var(--blue),var(--blue-dark));color:white;border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(26,86,219,.25);transition:all .15s}
-.sb:hover{transform:translateY(-1px)}
-.mc{position:relative;border-radius:14px;overflow:hidden;border:1.5px solid var(--gray-200);box-shadow:0 2px 12px rgba(0,0,0,.08);margin-bottom:16px}
-#map{width:100%;height:580px;background:#0f172a}
-.cp{position:absolute;z-index:400;pointer-events:none;font-weight:900;font-size:13px;color:white;text-shadow:0 0 10px #000,0 0 6px #000;letter-spacing:1px}
-.cN{top:12px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:1px}
-.cS{bottom:12px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:1px}
-.cE{right:12px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:3px}
-.cW{left:12px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:3px}
-.ar{font-size:18px;line-height:1}
-.msrc{position:absolute;top:10px;right:10px;z-index:400;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);padding:6px 12px;border-radius:8px;display:flex;align-items:center;gap:6px}
-.msd{width:7px;height:7px;border-radius:50%;background:#34d399;animation:bl 1.5s infinite}
-@keyframes bl{0%,100%{opacity:1}50%{opacity:.3}}
-.mst{font-size:11px;font-weight:700;color:white}
-.mleg{position:absolute;bottom:32px;right:12px;z-index:400;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);border-radius:10px;padding:10px 14px;min-width:155px}
-.mlt{font-size:10px;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:.8px;text-transform:uppercase;margin-bottom:7px}
-.mlr{display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:12px;color:rgba(255,255,255,.8);font-weight:600}
-.mlr:last-child{margin-bottom:0}
-.mll{width:22px;height:3px;border-radius:2px}
-.ib{background:white;border-radius:12px;border:1.5px solid var(--gray-200);padding:18px;margin-bottom:16px;display:none}
-.ibt{font-size:14px;font-weight:800;color:var(--gray-700);margin-bottom:12px}
-.ibg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px}
-.ibi{background:var(--gray-50);border-radius:9px;padding:10px 12px}
-.ibl{font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px}
-.ibv{font-size:14px;font-weight:700;color:var(--gray-900)}
-.inst{background:#fffbeb;border:1.5px solid #fde68a;border-radius:12px;padding:15px 17px;margin-bottom:16px}
-.int{font-size:13px;font-weight:800;color:#92400e;margin-bottom:9px}
-.ins{display:flex;flex-direction:column;gap:6px}
-.inp{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:#78350f;font-family:'Noto Sans Devanagari',sans-serif;line-height:1.6}
-.inn{width:19px;height:19px;border-radius:50%;background:#fde68a;color:#92400e;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
-.st{display:none;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;margin-bottom:13px;font-size:13px;font-weight:600}
-.sl{background:#eff6ff;border:1px solid #bfdbfe;color:var(--blue)}
-.so{background:#dcfce7;border:1px solid #bbf7d0;color:var(--green)}
-.se{background:#fee2e2;border:1px solid #fecaca;color:var(--red)}
-.sp{width:15px;height:15px;border:2px solid rgba(26,86,219,.2);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
-@keyframes spin{to{transform:rotate(360deg)}}
-#pa{display:none}
-.rh{background:linear-gradient(135deg,var(--gray-900),#1e3a8a,var(--blue));padding:16px 22px;display:flex;align-items:center;justify-content:space-between}
-.rbn{font-size:20px;font-weight:900;color:white}.rbn span{color:#93c5fd}
-.rbs{font-size:10px;color:rgba(255,255,255,.6);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
-.rbg{display:inline-flex;align-items:center;gap:5px;background:rgba(22,163,74,.25);border:1px solid rgba(22,163,74,.4);padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;color:#34d399;margin-top:4px}
-.rm{text-align:right;font-size:12px;color:rgba(255,255,255,.75);line-height:1.8}
-.rm strong{color:white}
-#pm{width:100%;height:480px;background:#0f172a}
-.rt{padding:16px 20px}
-.rtm{width:100%;border-collapse:collapse;margin-bottom:12px}
-.rtm th{background:var(--gray-900);color:white;padding:8px 12px;font-size:12px;font-weight:700;text-align:center}
-.rtm td{padding:8px 12px;text-align:center;font-size:13px;border:1px solid var(--gray-200)}
-.rtm tr:nth-child(even) td{background:var(--gray-50)}
-.rti{display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:0;border:1px solid var(--gray-200);border-radius:10px;overflow:hidden;margin-bottom:12px}
-.rch{background:var(--gray-900);color:white;padding:8px 12px;font-size:11px;font-weight:700;text-align:center;text-transform:uppercase;letter-spacing:.4px}
-.rr{padding:7px 12px;border-top:1px solid var(--gray-200);display:flex;justify-content:space-between;align-items:center;font-size:12px}
-.rr .l{color:var(--gray-500);font-size:11px;font-weight:600}
-.rr .v{font-weight:700;color:var(--gray-900)}
-.rr .vb{font-weight:700;color:var(--blue)}
-.rd{background:#fffbeb;border-top:1px solid #fde68a;padding:11px 20px;font-size:11px;color:#78350f;line-height:1.7}
-.ab{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap}
-.bp{flex:1;min-width:140px;padding:12px;background:var(--blue);color:white;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;transition:all .15s}
-.bp:hover{background:var(--blue-dark)}
-.bw{flex:1;min-width:140px;padding:12px;background:var(--wa);color:white;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;transition:all .15s}
-@media print{
-  nav,.card,.ab,h1,.sub,.hiw,.inst,.ib,.mc,.st{display:none!important}
-  .wrap{margin:0;padding:0;max-width:100%}
-  #pa{display:block!important}
-  body{background:white}
-  .rh,.rch,.rtm th,.rd{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+:root{
+  --blue:#1a56db;--blue-dk:#1040b0;--blue-lt:#eff6ff;--sky:#0ea5e9;
+  --g50:#f8fafc;--g100:#f1f5f9;--g200:#e2e8f0;--g400:#94a3b8;
+  --g500:#64748b;--g700:#334155;--g900:#0f172a;
+  --wa:#25d366;--green:#16a34a;--saffron:#f97316;
 }
-@media(max-width:600px){nav{padding:0 14px}.rti{grid-template-columns:1fr}}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans','Noto Sans Devanagari',sans-serif;background:#fff;color:var(--g900);-webkit-font-smoothing:antialiased}
+
+/* NAV */
+nav{background:#fff;border-bottom:1px solid var(--g200);height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:200;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.nb{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nl{width:40px;height:40px;background:linear-gradient(135deg,var(--blue),var(--blue-dk));border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(26,86,219,.3)}
+.nl svg{width:22px;height:22px}
+.nn{font-size:20px;font-weight:800;color:var(--g900);letter-spacing:-.3px}.nn span{color:var(--blue)}
+.nbg{font-size:10px;font-weight:700;background:var(--blue-lt);color:var(--blue);padding:2px 8px;border-radius:20px;letter-spacing:.5px;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:5px}
+.nav-links a{padding:8px 13px;border-radius:8px;font-size:13px;font-weight:600;color:var(--g600);text-decoration:none;transition:all .15s;color:var(--g500)}
+.nav-links a:hover{background:var(--g100);color:var(--g900)}
+.nav-wa{background:var(--wa)!important;color:#fff!important;box-shadow:0 2px 8px rgba(37,211,102,.25)}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 50%,#1d4ed8 100%);padding:72px 28px 80px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 70% 50%,rgba(59,130,246,.15) 0%,transparent 70%)}
+.hero-inner{max-width:960px;margin:0 auto;display:grid;grid-template-columns:1fr 400px;gap:56px;align-items:center;position:relative}
+.hero-tag{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);padding:6px 14px;border-radius:30px;margin-bottom:20px;backdrop-filter:blur(10px)}
+.hero-tag .dot{width:8px;height:8px;border-radius:50%;background:#34d399;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.hero-tag span{font-size:11px;font-weight:700;color:rgba(255,255,255,.85);letter-spacing:.5px;text-transform:uppercase}
+.hero h1{font-size:clamp(28px,4vw,46px);font-weight:800;color:#fff;line-height:1.12;letter-spacing:-.5px;margin-bottom:16px}
+.hero h1 em{font-style:normal;color:#93c5fd}
+.hero-mr{font-family:'Noto Sans Devanagari',sans-serif;font-size:15px;color:rgba(255,255,255,.7);line-height:1.8;margin-bottom:28px}
+.hero-btns{display:flex;gap:11px;flex-wrap:wrap}
+.btn-wa{display:inline-flex;align-items:center;gap:8px;padding:13px 22px;background:var(--wa);color:#fff;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none;box-shadow:0 4px 20px rgba(37,211,102,.4);transition:all .15s}
+.btn-wa:hover{filter:brightness(1.05);transform:translateY(-1px)}
+.btn-outline{display:inline-flex;align-items:center;gap:8px;padding:13px 22px;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.25);color:#fff;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;backdrop-filter:blur(8px);transition:all .15s}
+.btn-outline:hover{background:rgba(255,255,255,.18)}
+
+/* HERO ORDER CARD */
+.hero-card{background:rgba(255,255,255,.07);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:24px;position:relative;z-index:1}
+.hc-title{font-size:11px;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:.5px;text-transform:uppercase;margin-bottom:14px}
+.hc-step{display:flex;align-items:flex-start;gap:11px;padding:11px 12px;border-radius:9px;margin-bottom:7px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);transition:background .15s}
+.hc-step:last-of-type{margin-bottom:0}
+.hc-num{width:26px;height:26px;border-radius:7px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}
+.n1{background:rgba(59,130,246,.3);color:#93c5fd}
+.n2{background:rgba(37,211,102,.25);color:#34d399}
+.n3{background:rgba(251,191,36,.2);color:#fcd34d}
+.n4{background:rgba(167,139,250,.2);color:#c4b5fd}
+.hc-txt{font-size:13px;font-weight:700;color:#fff}
+.hc-sub{font-family:'Noto Sans Devanagari',sans-serif;font-size:11px;color:rgba(255,255,255,.5);margin-top:2px}
+.hc-price{margin-top:14px;padding:11px 13px;background:rgba(37,211,102,.15);border:1px solid rgba(37,211,102,.3);border-radius:9px;display:flex;align-items:center;justify-content:space-between}
+.hp-lbl{font-family:'Noto Sans Devanagari',sans-serif;font-size:12px;color:rgba(255,255,255,.65)}
+.hp-amt{font-size:22px;font-weight:800;color:#34d399}
+
+/* TRUST */
+.trust{background:var(--blue-lt);border-bottom:1px solid var(--g200);padding:0 28px}
+.trust-inner{max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.ti{padding:16px;text-align:center;border-right:1px solid var(--g200)}
+.ti:last-child{border-right:none}
+.ti-num{font-size:22px;font-weight:800;color:var(--blue)}
+.ti-lbl{font-family:'Noto Sans Devanagari',sans-serif;font-size:11px;color:var(--g400);margin-top:3px;font-weight:500}
+
+/* SECTIONS */
+.section{padding:68px 28px}
+.section.alt{background:var(--g50)}
+.sec-inner{max-width:960px;margin:0 auto}
+.sec-top{text-align:center;margin-bottom:44px}
+.kicker{display:inline-block;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--blue);background:var(--blue-lt);padding:5px 13px;border-radius:20px;margin-bottom:11px}
+.sec-title{font-size:clamp(22px,3vw,34px);font-weight:800;letter-spacing:-.3px;margin-bottom:9px}
+.sec-sub{font-family:'Noto Sans Devanagari',sans-serif;font-size:14px;color:var(--g400);max-width:480px;margin:0 auto;line-height:1.7}
+
+/* SERVICE CARDS */
+.svc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.svc{background:#fff;border-radius:14px;border:1.5px solid var(--g200);padding:26px;transition:all .2s;position:relative;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.svc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--sky));transform:scaleX(0);transform-origin:left;transition:transform .25s}
+.svc:hover{transform:translateY(-4px);box-shadow:0 8px 28px rgba(26,86,219,.12);border-color:#bfdbfe}
+.svc:hover::after{transform:scaleX(1)}
+.svc-icon{font-size:30px;margin-bottom:14px;display:block}
+.svc-title{font-size:17px;font-weight:800;margin-bottom:4px}
+.svc-mr{font-family:'Noto Sans Devanagari',sans-serif;font-size:12px;color:var(--blue);margin-bottom:9px;font-weight:600}
+.svc-desc{font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;color:var(--g500);line-height:1.7;margin-bottom:18px}
+.svc-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;background:var(--blue-lt);color:var(--blue);border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;border:1.5px solid #bfdbfe;transition:all .15s}
+.svc-btn:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
+.svc-badge{position:absolute;top:16px;right:16px;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:.4px}
+.badge-new{background:#fef3c7;color:#d97706}
+.badge-pop{background:#fce7f3;color:#9d174d}
+.badge-free{background:#dcfce7;color:#15803d}
+.badge-live{background:#dbeafe;color:#1d4ed8}
+
+/* HOW IT WORKS */
+.hiw{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative}
+.hiw::before{content:'';position:absolute;top:32px;left:12%;right:12%;height:2px;background:linear-gradient(90deg,var(--blue),var(--sky));z-index:0;border-radius:2px}
+.hiw-step{text-align:center;padding:0 14px;position:relative;z-index:1}
+.hiw-circle{width:64px;height:64px;border-radius:50%;background:#fff;border:2px solid var(--blue);display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 16px;box-shadow:0 0 0 6px var(--blue-lt)}
+.hiw-title{font-size:14px;font-weight:800;margin-bottom:5px}
+.hiw-sub{font-family:'Noto Sans Devanagari',sans-serif;font-size:12px;color:var(--g400);line-height:1.6}
+
+/* PRICING */
+.price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:14px}
+.price-card{background:#fff;border-radius:14px;border:1.5px solid var(--g200);padding:22px;text-align:center;transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.price-card.feat{border-color:var(--blue);box-shadow:0 4px 20px rgba(26,86,219,.12);background:linear-gradient(135deg,var(--blue-lt) 0%,#fff 100%)}
+.price-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(26,86,219,.1)}
+.pc-icon{font-size:26px;margin-bottom:10px}
+.pc-name{font-size:13px;font-weight:700;color:var(--g700);margin-bottom:5px}
+.pc-mr{font-family:'Noto Sans Devanagari',sans-serif;font-size:11px;color:var(--g400);margin-bottom:11px}
+.pc-price{font-size:30px;font-weight:800;color:var(--blue)}
+.pc-price sup{font-size:16px;vertical-align:top;margin-top:5px;display:inline-block}
+.pc-note{font-size:11px;color:var(--g400);margin-top:3px}
+.pc-btn{display:block;margin-top:14px;padding:9px;background:var(--blue-lt);color:var(--blue);border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;border:1.5px solid #bfdbfe;transition:all .15s}
+.price-card.feat .pc-btn{background:var(--blue);color:#fff;border-color:var(--blue)}
+.pc-btn:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* DISTRICTS */
+.dist-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:8px}
+.dist-chip{display:flex;align-items:center;gap:7px;padding:9px 13px;background:#fff;border:1.5px solid var(--g200);border-radius:9px;text-decoration:none;font-size:13px;font-weight:600;color:var(--g700);transition:all .15s}
+.dist-chip:hover{border-color:var(--blue);background:var(--blue-lt);color:var(--blue)}
+
+/* CTA */
+.cta{background:linear-gradient(135deg,var(--blue-dk) 0%,var(--blue) 100%);padding:60px 28px;text-align:center}
+.cta h2{font-size:clamp(22px,3vw,34px);font-weight:800;color:#fff;margin-bottom:11px}
+.cta p{font-family:'Noto Sans Devanagari',sans-serif;font-size:14px;color:rgba(255,255,255,.75);margin-bottom:26px;max-width:400px;margin-left:auto;margin-right:auto;line-height:1.7}
+.cta-wa{display:inline-flex;align-items:center;gap:11px;padding:15px 30px;background:var(--wa);color:#fff;border-radius:12px;font-size:16px;font-weight:800;text-decoration:none;box-shadow:0 6px 24px rgba(37,211,102,.4);transition:all .15s}
+.cta-wa:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(37,211,102,.5)}
+
+/* FOOTER */
+footer{background:var(--g900);color:rgba(255,255,255,.5);padding:36px 28px}
+.foot-inner{max-width:960px;margin:0 auto}
+.foot-top{display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px;margin-bottom:24px}
+.fb{font-size:19px;font-weight:800;color:#fff;margin-bottom:7px}.fb span{color:#93c5fd}
+.fsub{font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;line-height:1.7}
+.fh{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.35);margin-bottom:10px}
+.flinks{display:flex;flex-direction:column;gap:7px}
+.flinks a{font-size:13px;color:rgba(255,255,255,.5);text-decoration:none;transition:color .15s}
+.flinks a:hover{color:#93c5fd}
+.foot-bot{border-top:1px solid rgba(255,255,255,.08);padding-top:18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.fcopy{font-size:12px}
+.fdisc{font-family:'Noto Sans Devanagari',sans-serif;font-size:11px;color:rgba(255,255,255,.25);max-width:480px;line-height:1.6}
+
+/* WA FLOAT */
+.wa-float{position:fixed;bottom:22px;right:22px;z-index:999;width:54px;height:54px;border-radius:50%;background:var(--wa);box-shadow:0 4px 20px rgba(37,211,102,.45);display:flex;align-items:center;justify-content:center;text-decoration:none;transition:all .2s}
+.wa-float:hover{transform:scale(1.08)}
+
+@media(max-width:768px){
+  .hero-inner{grid-template-columns:1fr;gap:32px}
+  .hero-card{display:none}
+  nav{padding:0 16px}
+  .nav-links a:not(.nav-wa){display:none}
+  .hiw{grid-template-columns:1fr 1fr;gap:26px}
+  .hiw::before{display:none}
+  .trust-inner{grid-template-columns:1fr 1fr}
+  .ti:nth-child(2){border-right:none}
+  .foot-top{grid-template-columns:1fr;gap:22px}
+  .section{padding:52px 16px}
+  .hero{padding:50px 16px 62px}
+}
 </style>
 </head>
 <body>
+
+<!-- NAV -->
 <nav>
   <a class="nb" href="/">
-    <div class="nl"><svg viewBox="0 0 22 22" fill="none"><path d="M11 2.5L4 8v11h14V8L11 2.5z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/><rect x="7.5" y="12" width="3" height="7" rx="1" fill="white"/><rect x="11.5" y="12" width="3" height="7" rx="1" fill="white"/></svg></div>
+    <div class="nl">
+      <svg viewBox="0 0 22 22" fill="none"><path d="M11 2.5L4 8v11h14V8L11 2.5z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/><rect x="7.5" y="12" width="3" height="7" rx="1" fill="white"/><rect x="11.5" y="12" width="3" height="7" rx="1" fill="white"/></svg>
+    </div>
     <span class="nn">Prints<span>Hubh</span></span>
+    <span class="nbg">Maharashtra</span>
   </a>
-  <div class="nbg">🛰️ ISRO Bhuvan + Esri</div>
+  <div class="nav-links">
+    <a href="/village-search.html">गाव शोध</a>
+    <a href="/satbara.html">७/१२</a>
+    <a href="/land-report.html">नकाशा</a>
+    <a href="https://wa.me/917083811355?text=नमस्कार%2C%20मला%20जमीन%20कागदपत्रे%20हवी%20आहेत" class="nav-wa" target="_blank">💬 70838 11355</a>
+  </div>
 </nav>
 
-<div class="wrap">
-  <h1>📍 Land Boundary Report</h1>
-  <p class="sub">Esri Satellite + ISRO Bhuvan Cadastral boundaries — GPS location टाका, plot click करा, Report print करा</p>
-
-  <div class="hiw">
-    <div class="hs"><div class="hn">1</div>Location टाका</div>
-    <div class="ha">→</div>
-    <div class="hs"><div class="hn">2</div>Satellite + Cadastral दिसेल</div>
-    <div class="ha">→</div>
-    <div class="hs"><div class="hn">3</div>Plot Click करा</div>
-    <div class="ha">→</div>
-    <div class="hs"><div class="hn">4</div>Report Print करा</div>
-  </div>
-
-  <div class="card">
-    <div class="ct">📋 जमीन माहिती</div>
-    <div class="g2">
-      <div class="fg">
-        <label>जिल्हा (District)</label>
-        <select id="ds" onchange="onDC()">
-          <option value="">-- जिल्हा निवडा --</option>
-          <option value="19.9975,75.3189">छत्रपती संभाजीनगर</option>
-          <option value="19.7515,75.7139">जालना</option>
-          <option value="18.5204,73.8567">पुणे</option>
-          <option value="20.0112,73.7898">नाशिक</option>
-          <option value="19.2183,73.0955">ठाणे</option>
-          <option value="21.0077,76.1631">बुलढाणा</option>
-          <option value="21.1458,79.0882">नागपूर</option>
-          <option value="20.7002,77.0082">अमरावती</option>
-          <option value="17.6599,75.9064">सोलापूर</option>
-          <option value="16.7050,74.2433">कोल्हापूर</option>
-          <option value="17.6868,74.0183">सातारा</option>
-          <option value="16.8524,74.5815">सांगली</option>
-          <option value="18.4088,76.5604">लातूर</option>
-          <option value="19.1383,77.3210">नांदेड</option>
-          <option value="19.8762,75.3433">बीड</option>
-          <option value="20.9320,78.1215">यवतमाळ</option>
-          <option value="20.7503,78.6022">वर्धा</option>
-          <option value="18.3956,76.7857">धाराशिव</option>
-          <option value="19.5204,76.5667">परभणी</option>
-          <option value="19.7216,77.1490">हिंगोली</option>
-          <option value="20.7096,77.7264">अकोला</option>
-          <option value="20.1120,77.3101">वाशीम</option>
-          <option value="21.3462,79.6523">भंडारा</option>
-          <option value="21.4600,80.1964">गोंदिया</option>
-          <option value="19.9615,79.2961">चंद्रपूर</option>
-          <option value="20.1809,80.0049">गडचिरोली</option>
-          <option value="18.1148,73.7580">रायगड</option>
-          <option value="17.0010,73.2997">रत्नागिरी</option>
-          <option value="16.4126,73.7701">सिंधुदुर्ग</option>
-          <option value="19.6970,72.7697">पालघर</option>
-          <option value="21.0000,74.7473">धुळे</option>
-          <option value="21.3686,74.2389">नंदूरबार</option>
-          <option value="21.0125,75.5626">जळगाव</option>
-          <option value="19.0950,74.7380">अहमदनगर</option>
-        </select>
-      </div>
-      <div class="fg"><label>GPS Latitude</label><input type="text" id="lat" placeholder="उदा: 21.0082"></div>
-      <div class="fg"><label>GPS Longitude</label><input type="text" id="lng" placeholder="उदा: 76.1631"></div>
-      <div class="fg"><label>Survey / गट नंबर</label><input type="text" id="sno" placeholder="उदा: 9, 45/2"></div>
-      <div class="fg"><label>गाव (Village)</label><input type="text" id="vil" placeholder="उदा: Chikhali"></div>
-      <div class="fg"><label>तालुका (Taluka)</label><input type="text" id="tal" placeholder="उदा: Malkapur"></div>
-    </div>
-
-    <div style="margin-top:13px">
-      <div style="font-size:11px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px">Map Layers</div>
-      <div class="lts">
-        <button class="lb on" id="b-esri" onclick="tl('esri')"><div class="ld" style="background:#f59e0b"></div>🛰️ Esri Satellite</button>
-        <button class="lb on" id="b-cad" onclick="tl('cad')"><div class="ld" style="background:#ff3333"></div>📐 Bhuvan Cadastral</button>
-        <button class="lb" id="b-osm" onclick="tl('osm')"><div class="ld" style="background:#3b82f6"></div>🗺️ Street Map</button>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-tag"><div class="dot"></div><span>WhatsApp सेवा • Fast Delivery</span></div>
+      <h1>महाराष्ट्र जमीन<br>कागदपत्रे <em>घरपोच</em></h1>
+      <p class="hero-mr">७/१२ उतारा, गाव नकाशा, TP/DP/Regional Map — WhatsApp वर मागवा, काही मिनिटात PDF मिळवा. तलाठी कार्यालयात जाण्याची गरज नाही!</p>
+      <div class="hero-btns">
+        <a href="https://wa.me/917083811355?text=नमस्कार%2C%20मला%20जमीन%20कागदपत्रे%20हवी%20आहेत.%0Aजिल्हा:%20%0Aतालुका:%20%0Aगाव:%20%0Aगट%20नंबर:" class="btn-wa" target="_blank">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          WhatsApp वर Order करा
+        </a>
+        <a href="/village-search.html" class="btn-outline">🔍 गाव / जिल्हा शोधा</a>
       </div>
     </div>
-
-    <div id="st" class="st"></div>
-    <button class="sb" onclick="goTo()">🔍 Map वर शोधा — Cadastral Boundary दाखवा</button>
-  </div>
-
-  <div class="inst">
-    <div class="int">📖 Map कसे वापरायचे</div>
-    <div class="ins">
-      <div class="inp"><div class="inn">1</div>GPS Lat/Lng टाका किंवा जिल्हा निवडा → "Map वर शोधा" दाबा</div>
-      <div class="inp"><div class="inn">2</div>लाल रेषा = Bhuvan Cadastral boundaries. Zoom in करा (level 14+) — boundaries स्पष्ट दिसतात</div>
-      <div class="inp"><div class="inn">3</div>Map वर कुठेही click करा → तो point select होईल → खाली Survey No., गाव भरा</div>
-      <div class="inp"><div class="inn">4</div>"Report Generate करा" button दाबा → Print करा किंवा WhatsApp वर order पाठवा</div>
-    </div>
-  </div>
-
-  <div class="mc">
-    <div id="map"></div>
-    <div class="cp cN"><span class="ar">↑</span>NORTH</div>
-    <div class="cp cS"><span class="ar">↓</span>SOUTH</div>
-    <div class="cp cE">EAST<span class="ar">→</span></div>
-    <div class="cp cW"><span class="ar">←</span>WEST</div>
-    <div class="msrc"><div class="msd"></div><span class="mst">ISRO Bhuvan + Esri</span></div>
-    <div class="mleg">
-      <div class="mlt">Legend</div>
-      <div class="mlr"><div class="mll" style="background:#ff3333"></div>Cadastral</div>
-      <div class="mlr"><div class="mll" style="background:#FFD700"></div>Selected</div>
-      <div class="mlr"><div class="mll" style="background:#34d399"></div>Location</div>
-    </div>
-  </div>
-
-  <div class="ib" id="ib">
-    <div class="ibt">📍 Selected Location</div>
-    <div class="ibg" id="ibg"></div>
-    <button class="sb" style="margin-top:12px" onclick="genReport()">📄 Report Generate करा → Print / PDF</button>
-  </div>
-
-  <div id="pa">
-    <div class="rh">
-      <div>
-        <div class="rbn">Prints<span>Hubh</span>.shop</div>
-        <div class="rbs">Maharashtra Land Report Service</div>
-        <div class="rbg">✓ ISRO Bhuvan + Esri Satellite</div>
-      </div>
-      <div class="rm">
-        <div id="rd"></div>
-        <strong>WhatsApp: +91 70838 11355</strong>
-        <div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:2px">bhuvan.nrsc.gov.in | esri.com</div>
+    <div class="hero-card">
+      <div class="hc-title">📋 Order कसे करावे</div>
+      <div class="hc-step"><div class="hc-num n1">1</div><div><div class="hc-txt">WhatsApp करा</div><div class="hc-sub">जिल्हा, तालुका, गाव, गट नंबर सांगा</div></div></div>
+      <div class="hc-step"><div class="hc-num n2">2</div><div><div class="hc-txt">आम्ही Download करतो</div><div class="hc-sub">महाभूमी / TP-DP Portal वरून</div></div></div>
+      <div class="hc-step"><div class="hc-num n3">3</div><div><div class="hc-txt">PDF पाठवतो</div><div class="hc-sub">WhatsApp वर Print-ready PDF</div></div></div>
+      <div class="hc-step"><div class="hc-num n4">4</div><div><div class="hc-txt">UPI Payment</div><div class="hc-sub">Delivery नंतर GPay / PhonePe</div></div></div>
+      <div class="hc-price">
+        <div><div class="hp-lbl">७/१२ उतारा पासून</div><div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:2px">सर्व जिल्हे • Fast</div></div>
+        <div class="hp-amt">₹39</div>
       </div>
     </div>
-    <div style="position:relative">
-      <div id="pm"></div>
-      <div class="cp cN" style="position:absolute"><span class="ar">↑</span>NORTH</div>
-      <div class="cp cS" style="position:absolute"><span class="ar">↓</span>SOUTH</div>
-      <div class="cp cE" style="position:absolute">EAST<span class="ar">→</span></div>
-      <div class="cp cW" style="position:absolute"><span class="ar">←</span>WEST</div>
-    </div>
-    <div class="rt">
-      <table class="rtm">
-        <tr><th>Survey No.</th><th>Village</th><th>Taluka</th><th>District</th><th>State</th></tr>
-        <tr><td id="xS">—</td><td id="xV">—</td><td id="xT">—</td><td id="xD">—</td><td>Maharashtra</td></tr>
-      </table>
-      <div class="rti">
-        <div>
-          <div class="rch">📐 Coordinates</div>
-          <div class="rr"><span class="l">Latitude</span><span class="vb" id="xLa">—</span></div>
-          <div class="rr"><span class="l">Longitude</span><span class="vb" id="xLn">—</span></div>
-          <div class="rr"><span class="l">Zoom</span><span class="v" id="xZ">—</span></div>
-          <div class="rr"><span class="l">Source</span><span class="v">ISRO Bhuvan</span></div>
-        </div>
-        <div>
-          <div class="rch">🗺️ Map Layers</div>
-          <div class="rr"><span class="l">Base</span><span class="v">Esri World Imagery</span></div>
-          <div class="rr"><span class="l">Cadastral</span><span class="v">ISRO Bhuvan WMS</span></div>
-          <div class="rr"><span class="l">Server</span><span class="v">bhuvan-vec2.nrsc.gov.in</span></div>
-          <div class="rr"><span class="l">Format</span><span class="v">WMS 1.1.1 PNG</span></div>
-        </div>
-        <div>
-          <div class="rch">📍 Details</div>
-          <div class="rr"><span class="l">Date</span><span class="v" id="xDt">—</span></div>
-          <div class="rr"><span class="l">WhatsApp</span><span class="vb">70838 11355</span></div>
-          <div class="rr"><span class="l">Portal</span><span class="v">PrintsHubh.shop</span></div>
-          <div class="rr"><span class="l">Type</span><span class="v">Land Report</span></div>
-        </div>
-      </div>
-    </div>
-    <div class="rd"><strong>Disclaimer:</strong> Map data sourced from ISRO Bhuvan (bhuvan.nrsc.gov.in) and Esri World Imagery. Cadastral boundaries are indicative only. This report is for information purposes only and cannot be used for any legal purpose. For official records visit mahabhumi.gov.in.</div>
   </div>
+</section>
 
-  <div class="ab" id="ab" style="display:none">
-    <button class="bp" onclick="window.print()">🖨️ Print / PDF Download</button>
-    <a id="wa" href="#" class="bw" target="_blank">💬 WhatsApp Order पाठवा</a>
+<!-- TRUST -->
+<div class="trust">
+  <div class="trust-inner">
+    <div class="ti"><div class="ti-num">34</div><div class="ti-lbl">जिल्हे</div></div>
+    <div class="ti"><div class="ti-num">44,000+</div><div class="ti-lbl">गावे</div></div>
+    <div class="ti"><div class="ti-num">⚡ Fast</div><div class="ti-lbl">तात्काळ सेवा</div></div>
+    <div class="ti"><div class="ti-num">100%</div><div class="ti-lbl">अधिकृत पोर्टल</div></div>
   </div>
 </div>
 
-<script>
-const map=L.map('map',{zoomControl:true}).setView([19.7515,75.7139],8);
-const lrs={
-  esri:L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{attribution:'Esri',maxZoom:20}),
-  osm:L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'OSM',maxZoom:19}),
-  cad:L.tileLayer.wms('https://bhuvan-vec2.nrsc.gov.in/bhuvan/ows',{layers:'cadastral',format:'image/png',transparent:true,version:'1.1.1',opacity:0.8,attribution:'ISRO Bhuvan'})
-};
-const ls={esri:true,cad:true,osm:false};
-lrs.esri.addTo(map);lrs.cad.addTo(map);
+<!-- SERVICES -->
+<section class="section">
+  <div class="sec-inner">
+    <div class="sec-top">
+      <div class="kicker">आमच्या सेवा</div>
+      <div class="sec-title">कोणते कागदपत्र हवे?</div>
+      <div class="sec-sub">सर्व प्रकारची जमीन कागदपत्रे — WhatsApp वर मागवा किंवा online बघा</div>
+    </div>
+    <div class="svc-grid">
 
-function tl(n){
-  ls[n]=!ls[n];
-  const b=document.getElementById('b-'+n);
-  if(ls[n]){lrs[n].addTo(map);b.classList.add('on');if(n==='esri'&&ls.cad)lrs.cad.bringToFront();}
-  else{map.removeLayer(lrs[n]);b.classList.remove('on');}
-}
-function onDC(){
-  const v=document.getElementById('ds').value;
-  if(!v)return;
-  const[a,b]=v.split(',');
-  document.getElementById('lat').value=a;
-  document.getElementById('lng').value=b;
-}
-let lm=null,cm=null;
-function goTo(){
-  const la=parseFloat(document.getElementById('lat').value);
-  const ln=parseFloat(document.getElementById('lng').value);
-  if(isNaN(la)||isNaN(ln)){ss('e','⚠️ Latitude आणि Longitude टाका');return;}
-  if(la<15||la>23||ln<72||ln>82){ss('e','⚠️ Maharashtra coordinates असणे आवश्यक (Lat:15-23, Lng:72-82)');return;}
-  ss('l','⏳ Map navigate करत आहे... Bhuvan Cadastral layer load होत आहे...');
-  if(lm)map.removeLayer(lm);
-  map.flyTo([la,ln],16,{duration:1.5});
-  lm=L.marker([la,ln],{icon:L.divIcon({className:'',html:'<div style="background:#16a34a;color:white;font-size:12px;font-weight:800;padding:5px 10px;border-radius:8px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.4);border:2px solid white">📍 Location</div>',iconAnchor:[40,20]})}).addTo(map);
-  setTimeout(()=>ss('o','✅ Map तयार! लाल रेषा = Cadastral boundaries. Plot वर click करा!'),2000);
-  document.getElementById('ab').style.display='flex';
-}
-map.on('click',function(e){
-  const la=e.latlng.lat,ln=e.latlng.lng;
-  const s=document.getElementById('sno').value||'?';
-  if(cm)map.removeLayer(cm);
-  cm=L.marker([la,ln],{icon:L.divIcon({className:'',html:`<div style="background:rgba(0,0,0,.8);color:#FFD700;font-size:13px;font-weight:900;padding:5px 10px;border-radius:8px;white-space:nowrap;border:2px solid #FFD700">${s!=='?'?'Survey '+s:'Selected'}</div>`,iconAnchor:[50,16]})}).addTo(map);
-  const ib=document.getElementById('ib'),ibg=document.getElementById('ibg');
-  ib.style.display='block';
-  ibg.innerHTML=`<div class="ibi"><div class="ibl">Latitude</div><div class="ibv">${la.toFixed(6)}</div></div><div class="ibi"><div class="ibl">Longitude</div><div class="ibv">${ln.toFixed(6)}</div></div><div class="ibi"><div class="ibl">Survey No.</div><div class="ibv">${s}</div></div><div class="ibi"><div class="ibl">Village</div><div class="ibv">${document.getElementById('vil').value||'?'}</div></div><div class="ibi"><div class="ibl">Taluka</div><div class="ibv">${document.getElementById('tal').value||'?'}</div></div><div class="ibi"><div class="ibl">Zoom</div><div class="ibv">${map.getZoom()}</div></div>`;
-  ib.scrollIntoView({behavior:'smooth'});
-  window._pd={la,ln};
-});
-let pm=null;
-function genReport(){
-  const d=window._pd||{};
-  const la=d.la||parseFloat(document.getElementById('lat').value)||19.7515;
-  const ln=d.ln||parseFloat(document.getElementById('lng').value)||75.7139;
-  const s=document.getElementById('sno').value||'—';
-  const v=document.getElementById('vil').value||'—';
-  const t=document.getElementById('tal').value||'—';
-  const ds=document.getElementById('ds');
-  const dn=ds.options[ds.selectedIndex]?.text||'—';
-  const dt=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
-  document.getElementById('xS').textContent=s;
-  document.getElementById('xV').textContent=v;
-  document.getElementById('xT').textContent=t;
-  document.getElementById('xD').textContent=dn!=='-- जिल्हा निवडा --'?dn:'—';
-  document.getElementById('xLa').textContent=la.toFixed(6);
-  document.getElementById('xLn').textContent=ln.toFixed(6);
-  document.getElementById('xZ').textContent=map.getZoom();
-  document.getElementById('rd').textContent=dt;
-  document.getElementById('xDt').textContent=dt;
-  document.getElementById('pa').style.display='block';
-  document.getElementById('ab').style.display='flex';
-  setTimeout(()=>{
-    if(pm){pm.remove();pm=null;}
-    pm=L.map('pm',{zoomControl:false,attributionControl:false}).setView([la,ln],map.getZoom());
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:20}).addTo(pm);
-    L.tileLayer.wms('https://bhuvan-vec2.nrsc.gov.in/bhuvan/ows',{layers:'cadastral',format:'image/png',transparent:true,version:'1.1.1',opacity:0.85}).addTo(pm);
-    if(s!=='—')L.marker([la,ln],{icon:L.divIcon({className:'',html:`<div style="background:rgba(0,0,0,.8);color:#FFD700;font-weight:900;font-size:15px;padding:4px 9px;border-radius:6px;border:2px solid #FFD700">${s}</div>`,iconAnchor:[20,14]})}).addTo(pm);
-  },200);
-  const wt=encodeURIComponent(`📍 Land Report Request\nSurvey No: ${s}\nGaon: ${v}, ${t}\nLat: ${la.toFixed(6)}, Lng: ${ln.toFixed(6)}\n\nPrintsHubh.shop — +91 70838 11355`);
-  document.getElementById('wa').href=`https://wa.me/917083811355?text=${wt}`;
-  ss('o','✅ Report तयार! Print करा किंवा WhatsApp वर order पाठवा.');
-  document.getElementById('ab').scrollIntoView({behavior:'smooth'});
-}
-map.on('zoomend',function(){
-  const z=map.getZoom();
-  if(z<13)ss('l',`⬆️ Zoom in करा (सध्या: ${z}) — Cadastral boundaries level 13+ वर दिसतात`);
-  else ss('o',`✅ Zoom ${z} — Cadastral boundaries visible. Plot वर click करा!`);
-});
-function ss(t,m){
-  const s=document.getElementById('st');
-  s.className='st s'+t;
-  s.innerHTML=(t==='l'?'<div class="sp"></div>':'')+m;
-  s.style.display='flex';
-}
-setTimeout(()=>ss('o','✅ Map ready! Location टाका किंवा Map वर zoom करा'),500);
-</script>
+      <div class="svc">
+        <span class="svc-badge badge-pop">Popular</span>
+        <span class="svc-icon">📋</span>
+        <div class="svc-title">७/१२ उतारा</div>
+        <div class="svc-mr">सातबारा उतारा</div>
+        <div class="svc-desc">गट नंबरनुसार सातबारा उतारा. खातेदाराचे नाव, क्षेत्रफळ, पीक, कर्ज — सर्व PDF मध्ये.</div>
+        <a href="https://wa.me/917083811355?text=७/१२%20उतारा%20हवे%20आहे.%0Aजिल्हा:%20%0Aतालुका:%20%0Aगाव:%20%0Aगट%20नंबर:" class="svc-btn" target="_blank">💬 WhatsApp Order →</a>
+      </div>
+
+      <div class="svc">
+        <span class="svc-icon">🗺️</span>
+        <div class="svc-title">गाव नकाशा</div>
+        <div class="svc-mr">Village / BhuNaksha Map</div>
+        <div class="svc-desc">गट नंबरनुसार जमिनीची boundary नकाशावर. Cadastral Map — जमीन ओळखण्यासाठी उपयुक्त.</div>
+        <a href="https://wa.me/917083811355?text=गाव%20नकाशा%20हवे%20आहे.%0Aजिल्हा:%20%0Aतालुका:%20%0Aगाव:%20%0Aगट%20नंबर:" class="svc-btn" target="_blank">💬 WhatsApp Order →</a>
+      </div>
+
+      <div class="svc">
+        <span class="svc-icon">📑</span>
+        <div class="svc-title">८अ खाते उतारा</div>
+        <div class="svc-mr">8A Khate Utara</div>
+        <div class="svc-desc">खाते नंबरनुसार सर्व गट नंबरची माहिती. बँक कर्जासाठी आवश्यक हक्काचा पत्रक.</div>
+        <a href="https://wa.me/917083811355?text=८अ%20खाते%20उतारा%20हवे%20आहे.%0Aजिल्हा:%20%0Aतालुका:%20%0Aगाव:%20%0Aखाते%20नंबर:" class="svc-btn" target="_blank">💬 WhatsApp Order →</a>
+      </div>
+
+      <div class="svc">
+        <span class="svc-badge badge-new">New</span>
+        <span class="svc-icon">🏙️</span>
+        <div class="svc-title">Town Planning Map</div>
+        <div class="svc-mr">टाउन प्लानिंग नकाशा</div>
+        <div class="svc-desc">NA, Residential, Commercial, Industrial झोन माहिती. जमीन खरेदी करण्यापूर्वी झोन तपासा.</div>
+        <a href="https://wa.me/917083811355?text=Town%20Planning%20Map%20हवे%20आहे.%0Aजिल्हा:%20%0Aशहर/गाव:" class="svc-btn" target="_blank">💬 WhatsApp Order →</a>
+      </div>
+
+      <div class="svc">
+        <span class="svc-badge badge-new">New</span>
+        <span class="svc-icon">📐</span>
+        <div class="svc-title">Development Plan (DP)</div>
+        <div class="svc-mr">विकास आराखडा</div>
+        <div class="svc-desc">नगर पालिका विकास आराखडा. DP Road, Reserved Plot, Green Zone — सर्व माहिती PDF मध्ये.</div>
+        <a href="https://wa.me/917083811355?text=Development%20Plan%20(DP)%20हवे%20आहे.%0Aजिल्हा:%20%0Aशहर:" class="svc-btn" target="_blank">💬 WhatsApp Order →</a>
+      </div>
+
+      <div class="svc">
+        <span class="svc-badge badge-new">New</span>
+        <span class="svc-icon">🗾</span>
+        <div class="svc-title">Regional Plan Map</div>
+        <div class="svc-mr">प्रादेशिक आराखडा</div>
+        <div class="svc-desc">MRDA / PMRDA / MMRDA प्रादेशिक नकाशा. शेत जमिनीचे भवितव्य जाणून घ्या.</div>
+        <a href="https://wa.me/917083811355?text=Regional%20Plan%20Map%20हवे%20आहे.%0Aजिल्हा:%20%0Aक्षेत्र:" class="svc-btn" target="_blank">💬 WhatsApp Order →</a>
+      </div>
+
+      <div class="svc">
+        <span class="svc-badge badge-live">Live</span>
+        <span class="svc-icon">🛰️</span>
+        <div class="svc-title">Land Boundary Report</div>
+        <div class="svc-mr">ISRO Bhuvan Cadastral Map</div>
+        <div class="svc-desc">Satellite map वर ISRO Bhuvan cadastral boundaries — GPS टाका, plot बघा, Report print करा.</div>
+        <a href="/land-report.html" class="svc-btn" style="background:var(--blue);color:#fff;border-color:var(--blue)">🛰️ Live Map बघा →</a>
+      </div>
+
+      <div class="svc">
+        <span class="svc-badge badge-free">Free</span>
+        <span class="svc-icon">🔍</span>
+        <div class="svc-title">गाव शोध</div>
+        <div class="svc-mr">Village Search</div>
+        <div class="svc-desc">महाराष्ट्रातील ३४ जिल्हे, ३५८ तालुके, ४४,०००+ गावे — तुमचे गाव शोधा.</div>
+        <a href="/village-search.html" class="svc-btn">🔍 गाव शोधा →</a>
+      </div>
+
+      <div class="svc">
+        <span class="svc-icon">🔄</span>
+        <div class="svc-title">ई-फेरफार</div>
+        <div class="svc-mr">E-Ferfar Record</div>
+        <div class="svc-desc">जमीन हस्तांतर, वारसाहक्क, खरेदी-विक्री नोंदी. फेरफार रजिस्टर उतारा.</div>
+        <a href="https://wa.me/917083811355?text=ई-फेरफार%20उतारा%20हवे%20आहे." class="svc-btn" target="_blank">💬 WhatsApp Order →</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section alt">
+  <div class="sec-inner">
+    <div class="sec-top">
+      <div class="kicker">Process</div>
+      <div class="sec-title">फक्त ४ पायऱ्यांमध्ये</div>
+      <div class="sec-sub">तलाठी कार्यालयात जाण्याची गरज नाही — घरबसल्या कागदपत्रे मिळवा</div>
+    </div>
+    <div class="hiw">
+      <div class="hiw-step"><div class="hiw-circle">💬</div><div class="hiw-title">WhatsApp करा</div><div class="hiw-sub">जिल्हा, तालुका, गाव, गट नंबर पाठवा</div></div>
+      <div class="hiw-step"><div class="hiw-circle">⚡</div><div class="hiw-title">आम्ही Download</div><div class="hiw-sub">अधिकृत portal वरून कागदपत्र</div></div>
+      <div class="hiw-step"><div class="hiw-circle">📄</div><div class="hiw-title">PDF मिळेल</div><div class="hiw-sub">Print-ready PDF WhatsApp वर</div></div>
+      <div class="hiw-step"><div class="hiw-circle">💳</div><div class="hiw-title">UPI Payment</div><div class="hiw-sub">Delivery नंतर GPay / PhonePe</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section">
+  <div class="sec-inner">
+    <div class="sec-top">
+      <div class="kicker">Pricing</div>
+      <div class="sec-title">किती खर्च होतो?</div>
+      <div class="sec-sub">स्वस्त, पारदर्शक — कोणते hidden charges नाहीत</div>
+    </div>
+    <div class="price-grid">
+      <div class="price-card"><div class="pc-icon">📋</div><div class="pc-name">७/१२ उतारा</div><div class="pc-mr">सातबारा</div><div class="pc-price"><sup>₹</sup>39</div><div class="pc-note">प्रति उतारा • PDF</div><a href="https://wa.me/917083811355?text=७/१२%20उतारा%20हवे" class="pc-btn" target="_blank">Order करा</a></div>
+      <div class="price-card"><div class="pc-icon">🗺️</div><div class="pc-name">गाव नकाशा</div><div class="pc-mr">Village Map</div><div class="pc-price"><sup>₹</sup>59</div><div class="pc-note">प्रति नकाशा • PDF</div><a href="https://wa.me/917083811355?text=गाव%20नकाशा%20हवे" class="pc-btn" target="_blank">Order करा</a></div>
+      <div class="price-card"><div class="pc-icon">📑</div><div class="pc-name">८अ खाते</div><div class="pc-mr">8A Khate</div><div class="pc-price"><sup>₹</sup>39</div><div class="pc-note">प्रति खाते • PDF</div><a href="https://wa.me/917083811355?text=८अ%20खाते%20हवे" class="pc-btn" target="_blank">Order करा</a></div>
+      <div class="price-card feat"><div class="pc-icon">📦</div><div class="pc-name">Combo Pack</div><div class="pc-mr">७/१२ + ८अ + नकाशा</div><div class="pc-price"><sup>₹</sup>99</div><div class="pc-note">तिन्ही एकत्र • Best Value</div><a href="https://wa.me/917083811355?text=Combo%20Pack%20हवे" class="pc-btn" target="_blank">Order करा</a></div>
+      <div class="price-card"><div class="pc-icon">🏙️</div><div class="pc-name">Town Planning</div><div class="pc-mr">TP Map</div><div class="pc-price"><sup>₹</sup>79</div><div class="pc-note">NA / DP Zone • PDF</div><a href="https://wa.me/917083811355?text=Town%20Planning%20Map%20हवे" class="pc-btn" target="_blank">Order करा</a></div>
+      <div class="price-card"><div class="pc-icon">📐</div><div class="pc-name">Development Plan</div><div class="pc-mr">विकास आराखडा</div><div class="pc-price"><sup>₹</sup>99</div><div class="pc-note">DP Map • PDF</div><a href="https://wa.me/917083811355?text=Development%20Plan%20हवे" class="pc-btn" target="_blank">Order करा</a></div>
+      <div class="price-card"><div class="pc-icon">🗾</div><div class="pc-name">Regional Plan</div><div class="pc-mr">प्रादेशिक आराखडा</div><div class="pc-price"><sup>₹</sup>119</div><div class="pc-note">MRDA / PMRDA • PDF</div><a href="https://wa.me/917083811355?text=Regional%20Plan%20हवे" class="pc-btn" target="_blank">Order करा</a></div>
+      <div class="price-card"><div class="pc-icon">🛰️</div><div class="pc-name">Land Report</div><div class="pc-mr">Bhuvan Cadastral</div><div class="pc-price"><sup>₹</sup>Free</div><div class="pc-note">Online • Self Service</div><a href="/land-report.html" class="pc-btn">Map बघा</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- DISTRICTS -->
+<section class="section alt">
+  <div class="sec-inner">
+    <div class="sec-top">
+      <div class="kicker">Coverage</div>
+      <div class="sec-title">सर्व महाराष्ट्र Cover</div>
+      <div class="sec-sub">तुमच्या जिल्ह्यावर click करा</div>
+    </div>
+    <div class="dist-grid">
+      <a href="/village-search.html?district=NASHIK" class="dist-chip">📍 नाशिक</a>
+      <a href="/village-search.html?district=PUNE" class="dist-chip">📍 पुणे</a>
+      <a href="/village-search.html?district=THANE" class="dist-chip">📍 ठाणे</a>
+      <a href="/village-search.html?district=NAGPUR" class="dist-chip">📍 नागपूर</a>
+      <a href="/village-search.html?district=AURANGABAD" class="dist-chip">📍 छ.संभाजीनगर</a>
+      <a href="/village-search.html?district=KOLHAPUR" class="dist-chip">📍 कोल्हापूर</a>
+      <a href="/village-search.html?district=SOLAPUR" class="dist-chip">📍 सोलापूर</a>
+      <a href="/village-search.html?district=SATARA" class="dist-chip">📍 सातारा</a>
+      <a href="/village-search.html?district=SANGLI" class="dist-chip">📍 सांगली</a>
+      <a href="/village-search.html?district=AHMEDNAGAR" class="dist-chip">📍 अहमदनगर</a>
+      <a href="/village-search.html?district=JALGAON" class="dist-chip">📍 जळगाव</a>
+      <a href="/village-search.html?district=DHULE" class="dist-chip">📍 धुळे</a>
+      <a href="/village-search.html?district=NANDURBAR" class="dist-chip">📍 नंदूरबार</a>
+      <a href="/village-search.html?district=BULDHANA" class="dist-chip">📍 बुलढाणा</a>
+      <a href="/village-search.html?district=AMRAVATI" class="dist-chip">📍 अमरावती</a>
+      <a href="/village-search.html?district=AKOLA" class="dist-chip">📍 अकोला</a>
+      <a href="/village-search.html?district=WARDHA" class="dist-chip">📍 वर्धा</a>
+      <a href="/village-search.html?district=BEED" class="dist-chip">📍 बीड</a>
+      <a href="/village-search.html?district=LATUR" class="dist-chip">📍 लातूर</a>
+      <a href="/village-search.html?district=NANDED" class="dist-chip">📍 नांदेड</a>
+      <a href="/village-search.html?district=RAIGAD" class="dist-chip">📍 रायगड</a>
+      <a href="/village-search.html?district=RATNAGIRI" class="dist-chip">📍 रत्नागिरी</a>
+      <a href="/village-search.html?district=SINDHUDURG" class="dist-chip">📍 सिंधुदुर्ग</a>
+      <a href="/village-search.html?district=PALGHAR" class="dist-chip">📍 पालघर</a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <h2>आजच Order करा</h2>
+  <p>WhatsApp वर message पाठवा — जिल्हा, तालुका, गाव, गट नंबर सांगा. आम्ही लवकरच PDF पाठवतो.</p>
+  <a href="https://wa.me/917083811355?text=नमस्कार%2C%20मला%20जमीन%20कागदपत्रे%20हवी%20आहेत.%0A%0Aजिल्हा:%20%0Aतालुका:%20%0Aगाव:%20%0Aगट%20नंबर:%20%0Aकागदपत्र%20प्रकार:%20७/१२%20/%20नकाशा%20/%20TP%20/%20DP%20/%20Regional" class="cta-wa" target="_blank">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    WhatsApp: +91 70838 11355
+  </a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-inner">
+    <div class="foot-top">
+      <div>
+        <div class="fb">Prints<span>Hubh</span>.shop</div>
+        <div class="fsub">महाराष्ट्र जमीन कागदपत्रे WhatsApp वर मागवा. जलद, विश्वसनीय सेवा.</div>
+        <div style="margin-top:12px">
+          <a href="https://wa.me/917083811355" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#25d366;color:white;padding:8px 14px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:700">💬 +91 70838 11355</a>
+        </div>
+      </div>
+      <div>
+        <div class="fh">सेवा</div>
+        <div class="flinks">
+          <a href="/village-search.html">🔍 गाव शोध</a>
+          <a href="/satbara.html">📋 ७/१२ उतारा</a>
+          <a href="/map.html">🗺️ जमीन नकाशा</a>
+          <a href="/land-report.html">🛰️ Land Report</a>
+          <a href="/land-records.html">📁 भूमी माहिती</a>
+          <a href="/whatsapp-templates.html">💬 WA Templates</a>
+        </div>
+      </div>
+      <div>
+        <div class="fh">अधिकृत पोर्टल</div>
+        <div class="flinks">
+          <a href="https://mahabhumi.gov.in" target="_blank">🏛️ Mahabhumi.gov.in</a>
+          <a href="https://bhulekh.mahabhumi.gov.in" target="_blank">📋 Bhulekh Portal</a>
+          <a href="https://mahabhunakasha.mahabhumi.gov.in" target="_blank">🗺️ MahaBhuNaksha</a>
+          <a href="https://igrmaharashtra.gov.in" target="_blank">📜 IGR Maharashtra</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bot">
+      <div class="fcopy">© 2025 PrintsHubh.shop — All rights reserved</div>
+      <div class="fdisc">⚠️ हे portal service provider म्हणून काम करते. अधिकृत कागदपत्रे mahabhumi.gov.in वरून प्राप्त केली जातात. Legal purpose साठी वापरू नये.</div>
+    </div>
+  </div>
+</footer>
+
+<!-- WA FLOAT -->
+<a href="https://wa.me/917083811355?text=नमस्कार%2C%20मला%20जमीन%20कागदपत्रे%20हवी%20आहेत." class="wa-float" target="_blank">
+  <svg width="27" height="27" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
 </body>
 </html>
