@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>गाव / तलाठी शोध — PrintsHubh</title>
+<meta name="description" content="Maharashtra जिल्हा → तालुका → गाव शोध. 34 जिल्हे, 44000+ गावे.">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green:       #1040b0;
+  --green-mid:   #1a56db;
+  --green-light: #22c55e;
+  --green-pale:  #dcfce7;
+  --saffron:     #f97316;
+  --gray-50:     #f8fafc;
+  --gray-100:    #f1f5f9;
+  --gray-200:    #e2e8f0;
+  --gray-300:    #cbd5e1;
+  --gray-400:    #94a3b8;
+  --gray-600:    #475569;
+  --gray-800:    #1e293b;
+  --gray-900:    #0f172a;
+  --white:       #ffffff;
+  --r:           10px;
+  --shadow:      0 1px 3px rgba(0,0,0,.08);
+  --shadow-md:   0 4px 16px rgba(0,0,0,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Baloo 2','Noto Sans Devanagari',sans-serif;background:var(--gray-50);color:var(--gray-900);min-height:100vh}
+
+/* NAV */
+nav{background:var(--white);border-bottom:1px solid var(--gray-200);height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:100;box-shadow:var(--shadow)}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none}
+.nav-icon{width:34px;height:34px;background:linear-gradient(135deg,#1a56db,#1040b0);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.nav-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--gray-900)}
+.nav-title span{color:#1a56db}
+.back-btn{font-size:13px;color:var(--gray-600);text-decoration:none;padding:7px 14px;border-radius:8px;border:1.5px solid var(--gray-200);font-weight:600;transition:all .15s}
+.back-btn:hover{border-color:#1a56db;color:#1a56db}
+
+/* PAGE HEADER */
+.page-header{background:linear-gradient(135deg,var(--green) 0%,#0a3a1e 100%);padding:40px 24px;color:white}
+.page-header-inner{max-width:820px;margin:0 auto}
+.ph-label{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--green-light);margin-bottom:8px}
+.ph-title{font-size:clamp(22px,4vw,34px);font-weight:800;margin-bottom:8px;letter-spacing:-0.3px}
+.ph-sub{font-family:'Noto Sans Devanagari',sans-serif;font-size:14px;color:rgba(255,255,255,.7);line-height:1.6}
+
+/* MAIN LAYOUT */
+.content{max-width:820px;margin:0 auto;padding:32px 24px}
+
+/* SEARCH PANEL */
+.search-panel{background:var(--white);border-radius:14px;border:1.5px solid var(--gray-200);padding:28px;margin-bottom:24px;box-shadow:var(--shadow)}
+.panel-title{font-size:15px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px}
+.panel-title .ico{font-size:18px}
+
+.fields-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.field{display:flex;flex-direction:column}
+.field label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray-400);margin-bottom:6px}
+.field label em{font-family:'Noto Sans Devanagari',sans-serif;font-weight:500;text-transform:none;letter-spacing:0;color:var(--gray-300);font-style:normal;font-size:11.5px}
+
+select{width:100%;padding:10px 32px 10px 12px;border:1.5px solid var(--gray-200);border-radius:var(--r);font-size:13.5px;font-family:'Baloo 2',sans-serif;color:var(--gray-900);background:white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2394a3b8' d='M1 1l5 5 5-5'/%3E%3C/svg%3E") no-repeat right 12px center;appearance:none;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+select:focus{outline:none;border-color:#1a56db;box-shadow:0 0 0 3px rgba(26,122,74,.12)}
+select:disabled{background-color:var(--gray-50);color:var(--gray-300);cursor:not-allowed}
+
+.search-input{width:100%;padding:10px 12px;border:1.5px solid var(--gray-200);border-radius:var(--r);font-size:13.5px;font-family:'Baloo 2',sans-serif;transition:border-color .15s,box-shadow .15s}
+.search-input:focus{outline:none;border-color:#1a56db;box-shadow:0 0 0 3px rgba(26,122,74,.12)}
+
+/* RESULTS */
+.result-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.result-count{font-size:13px;font-weight:600;color:var(--gray-600)}
+.result-count strong{color:#1a56db}
+.copy-btn{padding:7px 14px;background:var(--green-pale);color:var(--green);border:1.5px solid #bbf7d0;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Baloo 2',sans-serif;transition:all .15s}
+.copy-btn:hover{background:var(--green-light);color:white}
+
+.village-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}
+.village-item{
+  background:white;border:1.5px solid var(--gray-200);border-radius:var(--r);
+  padding:10px 14px;font-size:13px;cursor:pointer;
+  transition:all .15s;display:flex;align-items:center;gap:8px;
+}
+.village-item:hover{border-color:#1a56db;background:var(--green-pale);color:var(--green)}
+.village-item .vi-dot{width:6px;height:6px;border-radius:50%;background:var(--gray-300);flex-shrink:0;transition:background .15s}
+.village-item:hover .vi-dot{background:var(--green-light)}
+.village-item.selected{border-color:#1a56db;background:var(--green-pale);color:var(--green)}
+.village-item.selected .vi-dot{background:var(--green-light)}
+
+/* VILLAGE INFO CARD */
+.info-card{background:var(--white);border-radius:14px;border:1.5px solid var(--gray-200);padding:28px;box-shadow:var(--shadow);display:none}
+.info-card.show{display:block}
+.info-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px}
+.info-name{font-size:22px;font-weight:800;margin-bottom:4px}
+.info-path{font-size:13px;color:var(--gray-400)}
+.info-actions{display:flex;gap:8px;flex-wrap:wrap}
+.action-btn{padding:9px 16px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Baloo 2',sans-serif;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all .15s;border:1.5px solid transparent}
+.action-btn.primary{background:#1a56db;color:white;border-color:#1a56db}
+.action-btn.primary:hover{background:var(--green)}
+.action-btn.secondary{background:white;color:var(--gray-800);border-color:var(--gray-200)}
+.action-btn.secondary:hover{border-color:#1a56db;color:#1a56db}
+.action-btn.wa{background:#25d366;color:white;border-color:#25d366}
+.action-btn.wa:hover{background:#22c55e}
+
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.info-item{padding:12px 14px;background:var(--gray-50);border-radius:8px;border:1px solid var(--gray-200)}
+.info-item-label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray-400);margin-bottom:4px}
+.info-item-value{font-size:14px;font-weight:700;color:var(--gray-900)}
+
+/* EMPTY / PLACEHOLDER */
+.empty-state{text-align:center;padding:60px 24px;color:var(--gray-400)}
+.empty-state .ico{font-size:48px;margin-bottom:12px}
+.empty-state h3{font-size:17px;font-weight:700;color:var(--gray-600);margin-bottom:6px}
+.empty-state p{font-family:'Noto Sans Devanagari',sans-serif;font-size:14px;line-height:1.7}
+
+/* STATS STRIP */
+.district-stats{background:var(--green-pale);border:1.5px solid #bbf7d0;border-radius:10px;padding:14px 18px;margin-bottom:20px;display:none}
+.district-stats.show{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.ds-item{font-size:13px;color:var(--green);font-weight:600}
+.ds-item strong{font-size:18px;font-weight:800;display:block;line-height:1.1}
+
+@media(max-width:640px){
+  .fields-row{grid-template-columns:1fr}
+  .info-header{flex-direction:column;gap:14px}
+  .info-grid{grid-template-columns:1fr}
+  .village-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <div class="nav-icon">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+        <path d="M10 2L3 7v9h14V7L10 2z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
+        <rect x="7" y="11" width="2.5" height="5" rx=".5" fill="white"/>
+        <rect x="10.5" y="11" width="2.5" height="5" rx=".5" fill="white"/>
+      </svg>
+    </div>
+    <span class="nav-title">Prints<span>Hubh</span></span>
+  </a>
+  <a class="back-btn" href="index.html">← मुख्यपृष्ठ</a>
+</nav>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="ph-label">Village Search</div>
+    <div class="ph-title">🏘️ गाव / तलाठी शोध</div>
+    <div class="ph-sub">जिल्हा निवडा → तालुका निवडा → गाव शोधा. महाराष्ट्रातील ३४ जिल्हे, ३५८+ तालुके, ४४,000+ गावे.</div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- SEARCH PANEL -->
+  <div class="search-panel">
+    <div class="panel-title"><span class="ico">🔍</span> जिल्हा → तालुका → गाव</div>
+
+    <div class="fields-row">
+      <div class="field">
+        <label>जिल्हा <em>/ District</em></label>
+        <select id="distSel" onchange="onDistrictChange()">
+          <option value="">-- जिल्हा निवडा --</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>तालुका <em>/ Taluka</em></label>
+        <select id="talukaSel" disabled onchange="onTalukaChange()">
+          <option value="">-- तालुका निवडा --</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>गाव शोधा <em>/ Search Village</em></label>
+        <input type="text" class="search-input" id="villageSearch" placeholder="गावाचे नाव टाका..." disabled oninput="filterVillages()" autocomplete="off">
+      </div>
+    </div>
+  </div>
+
+  <!-- DISTRICT STATS -->
+  <div class="district-stats" id="distStats">
+    <div class="ds-item"><strong id="dsTalukas">0</strong>तालुके</div>
+    <div class="ds-item"><strong id="dsVillages">0</strong>गावे</div>
+    <div class="ds-item" id="dsName" style="color:var(--green);font-size:14px;font-weight:700"></div>
+  </div>
+
+  <!-- RESULTS AREA -->
+  <div id="resultsArea">
+    <div class="empty-state">
+      <div class="ico">🗺️</div>
+      <h3>जिल्हा निवडा</h3>
+      <p>वरून जिल्हा आणि तालुका निवडा.<br>त्यानंतर सर्व गावांची यादी दिसेल.</p>
+    </div>
+  </div>
+
+  <!-- VILLAGE INFO CARD -->
+  <div class="info-card" id="infoCard" style="margin-top:24px">
+    <div class="info-header">
+      <div>
+        <div class="info-name" id="infoVillageName"></div>
+        <div class="info-path" id="infoPath"></div>
+      </div>
+      <div class="info-actions">
+        <a href="#" id="btnSatbara" class="action-btn primary" onclick="return openSatbara()">📋 ७/१२ उतारा</a>
+        <a href="#" id="btnMap" class="action-btn secondary" onclick="return openMap()">🗺️ नकाशा</a>
+        <a href="#" id="btnWA" class="action-btn wa" target="_blank">💬 WhatsApp</a>
+      </div>
+    </div>
+    <div class="info-grid">
+      <div class="info-item">
+        <div class="info-item-label">जिल्हा / District</div>
+        <div class="info-item-value" id="ii-district"></div>
+      </div>
+      <div class="info-item">
+        <div class="info-item-label">तालुका / Taluka</div>
+        <div class="info-item-value" id="ii-taluka"></div>
+      </div>
+      <div class="info-item">
+        <div class="info-item-label">महसूल विभाग</div>
+        <div class="info-item-value" id="ii-division"></div>
+      </div>
+      <div class="info-item">
+        <div class="info-item-label">एकूण गावे (तालुक्यात)</div>
+        <div class="info-item-value" id="ii-total"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── ALL DATA EMBEDDED ─────────────────────────────────────────
+// Loaded asynchronously from JSON file
+let ALL_DATA = {};
+
+// Division mapping
+const DIVISIONS = {
+  'THANE':'कोकण','PALGHAR':'कोकण','RAIGAD':'कोकण','RATNAGIRI':'कोकण','SINDHUDURG':'कोकण',
+  'PUNE':'पुणे','SATARA':'पुणे','SANGLI':'पुणे','SOLAPUR':'पुणे','KOLHAPUR':'पुणे',
+  'NASHIK':'नाशिक','DHULE':'नाशिक','NANDURBAR':'नाशिक','JALGAON':'नाशिक','AHMEDNAGAR':'नाशिक',
+  'CHHATRAPATI SAMBHAJINAGAR':'छत्रपती संभाजीनगर','JALNA':'छत्रपती संभाजीनगर',
+  'PARBHANI':'छत्रपती संभाजीनगर','HINGOLI':'छत्रपती संभाजीनगर','BEED':'छत्रपती संभाजीनगर',
+  'NANDED':'छत्रपती संभाजीनगर','DHARASHIV':'छत्रपती संभाजीनगर','LATUR':'छत्रपती संभाजीनगर',
+  'AMRAVATI':'अमरावती','BULDHANA':'अमरावती','AKOLA':'अमरावती','WASHIM':'अमरावती','YAVATMAL':'अमरावती',
+  'NAGPUR':'नागपूर','WARDHA':'नागपूर','BHANDARA':'नागपूर','GONDIA':'नागपूर',
+  'CHANDRAPUR':'नागपूर','GADCHIROLI':'नागपूर'
+};
+
+const DIST_MARATHI = {
+  'THANE':'ठाणे','PALGHAR':'पालघर','RAIGAD':'रायगड','RATNAGIRI':'रत्नागिरी','SINDHUDURG':'सिंधुदुर्ग',
+  'PUNE':'पुणे','SATARA':'सातारा','SANGLI':'सांगली','SOLAPUR':'सोलापूर','KOLHAPUR':'कोल्हापूर',
+  'NASHIK':'नाशिक','DHULE':'धुळे','NANDURBAR':'नंदूरबार','JALGAON':'जळगाव','AHMEDNAGAR':'अहमदनगर',
+  'CHHATRAPATI SAMBHAJINAGAR':'छत्रपती संभाजीनगर','JALNA':'जालना',
+  'PARBHANI':'परभणी','HINGOLI':'हिंगोली','BEED':'बीड',
+  'NANDED':'नांदेड','DHARASHIV':'धाराशिव','LATUR':'लातूर',
+  'AMRAVATI':'अमरावती','BULDHANA':'बुलढाणा','AKOLA':'अकोला','WASHIM':'वाशिम','YAVATMAL':'यवतमाळ',
+  'NAGPUR':'नागपूर','WARDHA':'वर्धा','BHANDARA':'भंडारा','GONDIA':'गोंदिया',
+  'CHANDRAPUR':'चंद्रपूर','GADCHIROLI':'गडचिरोली'
+};
+
+let currentDistrict = '';
+let currentTaluka = '';
+let currentVillages = [];
+
+// ── INIT ────────────────────────────────────────────────────────
+async function init() {
+  // Load all data
+  try {
+    const res = await fetch('all_districts.json');
+    ALL_DATA = await res.json();
+  } catch(e) {
+    console.error('Failed to load data', e);
+    return;
+  }
+
+  // Populate districts
+  const sel = document.getElementById('distSel');
+  const districts = Object.keys(ALL_DATA).sort();
+  districts.forEach(d => {
+    const opt = document.createElement('option');
+    opt.value = d;
+    opt.textContent = `${DIST_MARATHI[d] || d} (${d})`;
+    sel.appendChild(opt);
+  });
+
+  // Check URL params
+  const params = new URLSearchParams(location.search);
+  const qDist = params.get('district');
+  if (qDist && ALL_DATA[qDist]) {
+    sel.value = qDist;
+    onDistrictChange();
+  }
+}
+
+function onDistrictChange() {
+  const distSel = document.getElementById('distSel');
+  const talukaSel = document.getElementById('talukaSel');
+  const villageSearch = document.getElementById('villageSearch');
+
+  currentDistrict = distSel.value;
+  currentTaluka = '';
+  currentVillages = [];
+
+  talukaSel.innerHTML = '<option value="">-- तालुका निवडा --</option>';
+  talukaSel.disabled = !currentDistrict;
+  villageSearch.disabled = true;
+  villageSearch.value = '';
+
+  document.getElementById('infoCard').classList.remove('show');
+
+  if (!currentDistrict) {
+    document.getElementById('distStats').classList.remove('show');
+    showEmpty();
+    return;
+  }
+
+  const talukas = Object.keys(ALL_DATA[currentDistrict]);
+  talukas.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t;
+    opt.textContent = t;
+    talukaSel.appendChild(opt);
+  });
+
+  // Update stats
+  const totalVillages = talukas.reduce((s, t) => s + ALL_DATA[currentDistrict][t].length, 0);
+  document.getElementById('dsTalukas').textContent = talukas.length;
+  document.getElementById('dsVillages').textContent = totalVillages.toLocaleString();
+  document.getElementById('dsName').textContent = `${DIST_MARATHI[currentDistrict] || currentDistrict} जिल्हा — ${DIVISIONS[currentDistrict] || ''} विभाग`;
+  document.getElementById('distStats').classList.add('show');
+
+  showEmpty('तालुका निवडा', 'वरून तालुका निवडा — सर्व गावे दिसतील.');
+}
+
+function onTalukaChange() {
+  const talukaSel = document.getElementById('talukaSel');
+  const villageSearch = document.getElementById('villageSearch');
+
+  currentTaluka = talukaSel.value;
+  villageSearch.value = '';
+
+  document.getElementById('infoCard').classList.remove('show');
+
+  if (!currentTaluka) {
+    villageSearch.disabled = true;
+    currentVillages = [];
+    showEmpty('तालुका निवडा', 'वरून तालुका निवडा.');
+    return;
+  }
+
+  currentVillages = ALL_DATA[currentDistrict][currentTaluka] || [];
+  villageSearch.disabled = false;
+  renderVillages(currentVillages);
+}
+
+function filterVillages() {
+  const q = document.getElementById('villageSearch').value.trim().toLowerCase();
+  if (!q) { renderVillages(currentVillages); return; }
+  const filtered = currentVillages.filter(v => v.toLowerCase().includes(q));
+  renderVillages(filtered, q);
+}
+
+function renderVillages(villages, query = '') {
+  const area = document.getElementById('resultsArea');
+  if (!villages.length) {
+    area.innerHTML = `<div class="empty-state"><div class="ico">🔍</div><h3>गाव सापडले नाही</h3><p>"${query}" या नावाचे गाव ${currentTaluka} तालुक्यात नाही.</p></div>`;
+    return;
+  }
+
+  const total = currentVillages.length;
+  const showing = villages.length;
+
+  area.innerHTML = `
+    <div class="result-bar">
+      <div class="result-count">${query ? `<strong>${showing}</strong> गावे सापडली "${query}" साठी` : `<strong>${showing}</strong> गावे — ${currentTaluka} तालुका`}</div>
+      <button class="copy-btn" onclick="copyVillages()">📋 यादी Copy करा</button>
+    </div>
+    <div class="village-grid" id="villageGrid">
+      ${villages.map(v => `<div class="village-item" onclick="selectVillage('${v.replace(/'/g,"\\'")}')"><div class="vi-dot"></div>${v}</div>`).join('')}
+    </div>
+  `;
+}
+
+function selectVillage(name) {
+  // Highlight selected
+  document.querySelectorAll('.village-item').forEach(el => {
+    el.classList.toggle('selected', el.textContent.trim() === name);
+  });
+
+  // Show info card
+  const card = document.getElementById('infoCard');
+  card.classList.add('show');
+
+  document.getElementById('infoVillageName').textContent = name;
+  document.getElementById('infoPath').textContent = `${DIST_MARATHI[currentDistrict] || currentDistrict} → ${currentTaluka} → ${name}`;
+  document.getElementById('ii-district').textContent = `${DIST_MARATHI[currentDistrict] || currentDistrict} (${currentDistrict})`;
+  document.getElementById('ii-taluka').textContent = currentTaluka;
+  document.getElementById('ii-division').textContent = DIVISIONS[currentDistrict] || '—';
+  document.getElementById('ii-total').textContent = `${currentVillages.length} गावे`;
+
+  // WhatsApp link
+  const waMsg = encodeURIComponent(`PrintsHubh — जमीन अभिलेख\nजिल्हा: ${currentDistrict}\nतालुका: ${currentTaluka}\nगाव: ${name}\n\nकृपया माझ्यासाठी 7/12 उतारा मागवा.`);
+  document.getElementById('btnWA').href = `https://wa.me/917083811355?text=${waMsg}`;
+
+  card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function openSatbara() {
+  const v = document.getElementById('infoVillageName').textContent;
+  location.href = `satbara.html?district=${encodeURIComponent(currentDistrict)}&taluka=${encodeURIComponent(currentTaluka)}&village=${encodeURIComponent(v)}`;
+  return false;
+}
+
+function openMap() {
+  const v = document.getElementById('infoVillageName').textContent;
+  location.href = `map.html?district=${encodeURIComponent(currentDistrict)}&taluka=${encodeURIComponent(currentTaluka)}&village=${encodeURIComponent(v)}`;
+  return false;
+}
+
+function copyVillages() {
+  const text = currentVillages.join('\n');
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = '✅ Copied!';
+    setTimeout(() => btn.textContent = '📋 यादी Copy करा', 2000);
+  });
+}
+
+function showEmpty(title = 'जिल्हा निवडा', sub = 'वरून जिल्हा आणि तालुका निवडा.') {
+  document.getElementById('resultsArea').innerHTML = `<div class="empty-state"><div class="ico">🗺️</div><h3>${title}</h3><p>${sub}</p></div>`;
+}
+
+// Start
+init();
+</script>
+</body>
+</html>

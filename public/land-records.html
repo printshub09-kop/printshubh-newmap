@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>भूमी अभिलेख — PrintsHubh</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{--green:#1040b0;--green-mid:#1a56db;--green-light:#22c55e;--green-pale:#dcfce7;--blue:#2563eb;--blue-pale:#eff6ff;--saffron:#f97316;--purple:#7c3aed;--purple-pale:#f5f3ff;--gray-50:#f8fafc;--gray-100:#f1f5f9;--gray-200:#e2e8f0;--gray-400:#94a3b8;--gray-600:#475569;--gray-800:#1e293b;--gray-900:#0f172a;--white:#ffffff;--r:10px;--shadow:0 1px 3px rgba(0,0,0,.08);--shadow-md:0 4px 16px rgba(0,0,0,.10)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Baloo 2','Noto Sans Devanagari',sans-serif;background:var(--gray-50);color:var(--gray-900);min-height:100vh}
+nav{background:white;border-bottom:1px solid var(--gray-200);height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:100;box-shadow:var(--shadow)}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none}
+.nav-icon{width:34px;height:34px;background:linear-gradient(135deg,#1a56db,#1040b0);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.nav-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--gray-900)}
+.nav-title span{color:#1a56db}
+.back-btn{font-size:13px;color:var(--gray-600);text-decoration:none;padding:7px 14px;border-radius:8px;border:1.5px solid var(--gray-200);font-weight:600;transition:all .15s}
+.back-btn:hover{border-color:var(--blue);color:var(--blue)}
+
+.page-header{background:linear-gradient(135deg,#1d4ed8 0%,#1e40af 40%,#1e3a8a 100%);padding:40px 24px;color:white}
+.page-header-inner{max-width:900px;margin:0 auto}
+.ph-title{font-size:clamp(22px,4vw,34px);font-weight:800;margin-bottom:8px}
+.ph-sub{font-family:'Noto Sans Devanagari',sans-serif;font-size:14px;color:rgba(255,255,255,.8);line-height:1.6}
+
+.content{max-width:900px;margin:0 auto;padding:32px 24px}
+
+/* SERVICES GRID */
+.services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-bottom:40px}
+.service-card{background:white;border-radius:14px;border:1.5px solid var(--gray-200);padding:22px;text-decoration:none;color:inherit;transition:all .2s;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.service-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent);opacity:0;transition:opacity .2s}
+.service-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);border-color:transparent}
+.service-card:hover::before{opacity:1}
+.service-card.green{--accent:linear-gradient(90deg,#1a56db,var(--green-light))}
+.service-card.blue{--accent:linear-gradient(90deg,var(--blue),#60a5fa)}
+.service-card.purple{--accent:linear-gradient(90deg,var(--purple),#a78bfa)}
+.service-card.saffron{--accent:linear-gradient(90deg,var(--saffron),#fbbf24)}
+
+.sc-icon{font-size:28px}
+.sc-title{font-size:16px;font-weight:700}
+.sc-mr{font-family:'Noto Sans Devanagari',sans-serif;font-size:12px;color:var(--gray-400)}
+.sc-desc{font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;color:var(--gray-600);line-height:1.6;flex:1}
+.sc-cta{font-size:13px;font-weight:700;display:flex;align-items:center;gap:4px;transition:gap .15s}
+.service-card.green .sc-cta{color:#1a56db}
+.service-card.blue .sc-cta{color:var(--blue)}
+.service-card.purple .sc-cta{color:var(--purple)}
+.service-card.saffron .sc-cta{color:var(--saffron)}
+.service-card:hover .sc-cta{gap:8px}
+
+/* INFO SECTIONS */
+.info-section{background:white;border-radius:14px;border:1.5px solid var(--gray-200);padding:28px;margin-bottom:20px;box-shadow:var(--shadow)}
+.is-title{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.is-mr{font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;color:var(--gray-600);line-height:1.8}
+
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.ig-item{background:var(--gray-50);border-radius:8px;padding:12px 14px;border:1px solid var(--gray-200)}
+.ig-label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray-400);margin-bottom:4px}
+.ig-value{font-family:'Noto Sans Devanagari',sans-serif;font-size:14px;font-weight:600;color:var(--gray-900)}
+
+/* QUICK LINKS */
+.links-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.ext-link{display:flex;align-items:center;gap:10px;padding:12px 14px;background:white;border:1.5px solid var(--gray-200);border-radius:10px;text-decoration:none;font-size:13px;font-weight:600;color:var(--gray-700);transition:all .15s}
+.ext-link:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-pale)}
+.ext-link .el-icon{font-size:18px}
+.ext-link .el-sub{font-family:'Noto Sans Devanagari',sans-serif;font-size:11px;color:var(--gray-400);font-weight:400;display:block}
+
+/* NOTICE */
+.notice{background:var(--blue-pale);border:1.5px solid #bfdbfe;border-radius:10px;padding:16px 18px;margin-bottom:24px;display:flex;gap:12px}
+.notice-ico{font-size:18px;flex-shrink:0}
+.notice-text{font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;color:#1e40af;line-height:1.7}
+
+@media(max-width:640px){.info-grid{grid-template-columns:1fr}.services-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <div class="nav-icon">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+        <path d="M10 2L3 7v9h14V7L10 2z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
+        <rect x="7" y="11" width="2.5" height="5" rx=".5" fill="white"/>
+        <rect x="10.5" y="11" width="2.5" height="5" rx=".5" fill="white"/>
+      </svg>
+    </div>
+    <span class="nav-title">Prints<span>Hubh</span></span>
+  </a>
+  <a class="back-btn" href="index.html">← मुख्यपृष्ठ</a>
+</nav>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="ph-title">📁 भूमी अभिलेख — Land Records</div>
+    <div class="ph-sub">महाराष्ट्र भूमी अभिलेख विभागाच्या सर्व सेवा एकाच ठिकाणी. ७/१२, ८अ, फेरफार, मोजणी — सर्व माहिती.</div>
+  </div>
+</div>
+
+<div class="content">
+
+  <div class="notice">
+    <div class="notice-ico">🏛️</div>
+    <div class="notice-text">
+      महाराष्ट्र शासनाच्या भूमी अभिलेख विभागाची माहिती. अधिकृत कागदपत्रांसाठी <strong>mahabhumi.gov.in</strong> किंवा <strong>bhulekh.maharashtra.gov.in</strong> वर जा. Print साठी WhatsApp: <strong>+91 70838 11355</strong>
+    </div>
+  </div>
+
+  <!-- SERVICES -->
+  <div class="services-grid">
+    <a href="satbara.html" class="service-card saffron">
+      <div class="sc-icon">📋</div>
+      <div>
+        <div class="sc-title">७/१२ उतारा</div>
+        <div class="sc-mr">सातबारा उतारा</div>
+      </div>
+      <div class="sc-desc">गट नंबरनुसार जमिनीचा ७/१२ उतारा. खातेदार, क्षेत्रफळ, पीक, कर्ज नोंद.</div>
+      <div class="sc-cta">उतारा पाहा →</div>
+    </a>
+
+    <a href="satbara.html#8a" class="service-card purple">
+      <div class="sc-icon">📑</div>
+      <div>
+        <div class="sc-title">८अ खाते उतारा</div>
+        <div class="sc-mr">8A Khate</div>
+      </div>
+      <div class="sc-desc">खाते नंबरनुसार सर्व गट नंबरची एकत्र माहिती. हक्काचा पत्रक.</div>
+      <div class="sc-cta">खाते पाहा →</div>
+    </a>
+
+    <a href="map.html" class="service-card green">
+      <div class="sc-icon">🗺️</div>
+      <div>
+        <div class="sc-title">भूमी नकाशा</div>
+        <div class="sc-mr">Land Map / BhuNaksha</div>
+      </div>
+      <div class="sc-desc">Survey नंबरनुसार जमिनीची boundary नकाशावर पाहा. Cadastral map.</div>
+      <div class="sc-cta">नकाशा पाहा →</div>
+    </a>
+
+    <a href="satbara.html" class="service-card blue">
+      <div class="sc-icon">🔄</div>
+      <div>
+        <div class="sc-title">ई-फेरफार</div>
+        <div class="sc-mr">E-Ferfar</div>
+      </div>
+      <div class="sc-desc">जमीन हस्तांतर, वारसाहक्क, खरेदी-विक्री नोंदी. फेरफार रजिस्टर.</div>
+      <div class="sc-cta">फेरफार पाहा →</div>
+    </a>
+  </div>
+
+  <!-- ABOUT LAND RECORDS -->
+  <div class="info-section">
+    <div class="is-title">ℹ️ ७/१२ उतारा म्हणजे काय?</div>
+    <div class="is-mr">
+      ७/१२ उतारा (सातबारा) हा महाराष्ट्र भूमी अभिलेख विभागाने ठेवलेला जमिनीचा मूळ दस्तऐवज आहे. त्यात जमिनीची संपूर्ण माहिती असते.
+      <br><br>
+      <strong>७/१२ मध्ये काय असते:</strong> खातेदाराचे नाव (Owner) • गट नंबर / Survey Number • जमिनीचे क्षेत्रफळ (Area in Hectares) • जमिनीचा प्रकार (जिरायत/बागायत/इतर) • पिकाची नोंद (Crop Details) • सिंचन माहिती • कर्ज व भार नोंद (Encumbrances)
+    </div>
+    <div class="info-grid">
+      <div class="ig-item">
+        <div class="ig-label">दस्तऐवज क्रमांक</div>
+        <div class="ig-value">Form ७ आणि Form १२ एकत्र</div>
+      </div>
+      <div class="ig-item">
+        <div class="ig-label">अधिकृत पोर्टल</div>
+        <div class="ig-value">mahabhumi.gov.in</div>
+      </div>
+      <div class="ig-item">
+        <div class="ig-label">भाषा</div>
+        <div class="ig-value">मराठी (Marathi)</div>
+      </div>
+      <div class="ig-item">
+        <div class="ig-label">शुल्क (Mahabhumi)</div>
+        <div class="ig-value">₹15 प्रति उतारा</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OFFICIAL LINKS -->
+  <div class="info-section">
+    <div class="is-title">🔗 अधिकृत शासकीय पोर्टल्स</div>
+    <div class="links-grid">
+      <a href="https://mahabhumi.gov.in" target="_blank" class="ext-link">
+        <span class="el-icon">🏛️</span>
+        <div>
+          <div>Mahabhumi</div>
+          <span class="el-sub">mahabhumi.gov.in</span>
+        </div>
+      </a>
+      <a href="https://bhulekh.mahabhumi.gov.in" target="_blank" class="ext-link">
+        <span class="el-icon">📋</span>
+        <div>
+          <div>Bhulekh Portal</div>
+          <span class="el-sub">bhulekh.mahabhumi.gov.in</span>
+        </div>
+      </a>
+      <a href="https://igrmaharashtra.gov.in" target="_blank" class="ext-link">
+        <span class="el-icon">📜</span>
+        <div>
+          <div>IGR Maharashtra</div>
+          <span class="el-sub">नोंदणी व मुद्रांक</span>
+        </div>
+      </a>
+      <a href="https://mahabhuinaksha.com" target="_blank" class="ext-link">
+        <span class="el-icon">🗺️</span>
+        <div>
+          <div>BhuNaksha</div>
+          <span class="el-sub">mahabhuinaksha.com</span>
+        </div>
+      </a>
+      <a href="https://edigitalferfar.mahaonline.gov.in" target="_blank" class="ext-link">
+        <span class="el-icon">🔄</span>
+        <div>
+          <div>E-Ferfar</div>
+          <span class="el-sub">Digital फेरफार</span>
+        </div>
+      </a>
+      <a href="https://www.maharerait.mahaonline.gov.in" target="_blank" class="ext-link">
+        <span class="el-icon">🏗️</span>
+        <div>
+          <div>MahaRERA</div>
+          <span class="el-sub">रिअल इस्टेट नोंदणी</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="info-section">
+    <div class="is-title">❓ वारंवार विचारले जाणारे प्रश्न</div>
+    <div style="display:flex;flex-direction:column;gap:14px;margin-top:4px">
+      <div style="padding:14px;background:var(--gray-50);border-radius:8px;border:1px solid var(--gray-200)">
+        <div style="font-weight:700;margin-bottom:4px">७/१२ उतारा कुठे मिळतो?</div>
+        <div style="font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;color:var(--gray-600);line-height:1.7">mahabhumi.gov.in वर ऑनलाईन मिळतो. किंवा तुमच्या तलाठी कार्यालयात जाऊन मिळवता येतो. आमच्या WhatsApp वर संपर्क केल्यावर आम्ही मागवून देतो.</div>
+      </div>
+      <div style="padding:14px;background:var(--gray-50);border-radius:8px;border:1px solid var(--gray-200)">
+        <div style="font-weight:700;margin-bottom:4px">७/१२ उताऱ्याचे किती शुल्क आहे?</div>
+        <div style="font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;color:var(--gray-600);line-height:1.7">mahabhumi.gov.in वर प्रति उतारा ₹15 शुल्क आहे. तलाठी कार्यालयातून मोफत मिळू शकतो.</div>
+      </div>
+      <div style="padding:14px;background:var(--gray-50);border-radius:8px;border:1px solid var(--gray-200)">
+        <div style="font-weight:700;margin-bottom:4px">ऑनलाईन ७/१२ कायदेशीर मान्य आहे का?</div>
+        <div style="font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;color:var(--gray-600);line-height:1.7">हो! mahabhumi.gov.in वरून डाउनलोड केलेला डिजिटल स्वाक्षरीत ७/१२ उतारा कायदेशीर मान्य आहे.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WA CTA -->
+  <div style="background:linear-gradient(135deg,#dcfce7,#bbf7d0);border:1.5px solid #86efac;border-radius:14px;padding:28px;text-align:center">
+    <div style="font-size:28px;margin-bottom:12px">📱</div>
+    <div style="font-size:18px;font-weight:800;margin-bottom:8px">WhatsApp वर Print मागवा</div>
+    <div style="font-family:'Noto Sans Devanagari',sans-serif;font-size:14px;color:var(--green);margin-bottom:18px;line-height:1.6">७/१२ उतारा, ८अ खाते, नकाशा — सर्व घरपोच मिळवा</div>
+    <a href="https://wa.me/917083811355?text=मला%20जमीन%20अभिलेख%20Print%20हवे%20आहेत" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:#25d366;color:white;padding:12px 24px;border-radius:10px;text-decoration:none;font-size:15px;font-weight:700;box-shadow:0 4px 16px rgba(37,211,102,.3);transition:all .15s" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">
+      💬 WhatsApp: +91 70838 11355
+    </a>
+  </div>
+
+</div>
+
+</body>
+</html>

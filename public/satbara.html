@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>७/१२ उतारा — PrintsHubh</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{--green:#1040b0;--green-mid:#1a56db;--green-light:#22c55e;--green-pale:#dcfce7;--saffron:#f97316;--saffron-pale:#fff7ed;--gray-50:#f8fafc;--gray-100:#f1f5f9;--gray-200:#e2e8f0;--gray-400:#94a3b8;--gray-600:#475569;--gray-800:#1e293b;--gray-900:#0f172a;--white:#ffffff;--r:10px;--shadow:0 1px 3px rgba(0,0,0,.08);--shadow-md:0 4px 16px rgba(0,0,0,.10)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Baloo 2','Noto Sans Devanagari',sans-serif;background:var(--gray-50);color:var(--gray-900);min-height:100vh}
+
+nav{background:white;border-bottom:1px solid var(--gray-200);height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:100;box-shadow:var(--shadow)}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none}
+.nav-icon{width:34px;height:34px;background:linear-gradient(135deg,#1a56db,#1040b0);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.nav-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--gray-900)}
+.nav-title span{color:#1a56db}
+.back-btn{font-size:13px;color:var(--gray-600);text-decoration:none;padding:7px 14px;border-radius:8px;border:1.5px solid var(--gray-200);font-weight:600;transition:all .15s}
+.back-btn:hover{border-color:#1a56db;color:#1a56db}
+
+.page-header{background:linear-gradient(135deg,#c2410c 0%,#ea580c 40%,#f97316 100%);padding:40px 24px;color:white}
+.page-header-inner{max-width:860px;margin:0 auto}
+.ph-label{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.8);margin-bottom:8px}
+.ph-title{font-size:clamp(22px,4vw,34px);font-weight:800;margin-bottom:8px;letter-spacing:-0.3px}
+.ph-sub{font-family:'Noto Sans Devanagari',sans-serif;font-size:14px;color:rgba(255,255,255,.8);line-height:1.6}
+
+.content{max-width:860px;margin:0 auto;padding:32px 24px}
+
+/* FORM */
+.form-card{background:white;border-radius:14px;border:1.5px solid var(--gray-200);padding:28px;margin-bottom:24px;box-shadow:var(--shadow)}
+.form-title{font-size:15px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px}
+.fields-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.field{display:flex;flex-direction:column}
+.field label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray-400);margin-bottom:6px}
+select,input[type=text]{width:100%;padding:10px 12px;border:1.5px solid var(--gray-200);border-radius:var(--r);font-size:13.5px;font-family:'Baloo 2',sans-serif;color:var(--gray-900);background:white;appearance:none;transition:border-color .15s,box-shadow .15s}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2394a3b8' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+select:focus,input:focus{outline:none;border-color:var(--saffron);box-shadow:0 0 0 3px rgba(249,115,22,.12)}
+select:disabled,input:disabled{background:var(--gray-50);color:var(--gray-300);cursor:not-allowed}
+
+.doc-tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+.doc-tab{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--gray-200);background:white;font-family:'Baloo 2',sans-serif;transition:all .15s;color:var(--gray-600)}
+.doc-tab:hover{border-color:var(--saffron);color:var(--saffron)}
+.doc-tab.active{background:var(--saffron-pale);border-color:var(--saffron);color:var(--saffron)}
+
+.btn-fetch{width:100%;padding:13px;background:var(--saffron);color:white;border:none;border-radius:var(--r);font-size:15px;font-weight:700;font-family:'Baloo 2',sans-serif;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-fetch:hover{background:#ea580c;transform:translateY(-1px)}
+.btn-fetch:disabled{background:var(--gray-200);color:var(--gray-400);cursor:not-allowed;transform:none}
+
+/* SATBARA DOCUMENT */
+.satbara-wrap{background:white;border-radius:14px;border:2px solid var(--gray-200);overflow:hidden;box-shadow:var(--shadow-md);display:none}
+.satbara-wrap.show{display:block}
+
+.doc-header{background:linear-gradient(135deg,#f97316,#c2410c);color:white;padding:20px 24px;display:flex;align-items:center;justify-content:space-between}
+.doc-header-left .doc-type{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:.8}
+.doc-header-left .doc-title{font-size:20px;font-weight:800;margin-top:2px}
+.doc-actions-bar{display:flex;gap:8px}
+.doc-act-btn{padding:8px 14px;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'Baloo 2',sans-serif;border:1.5px solid rgba(255,255,255,.3);background:rgba(255,255,255,.15);color:white;transition:all .15s}
+.doc-act-btn:hover{background:rgba(255,255,255,.25)}
+.doc-act-btn.wa-btn{background:#25d366;border-color:#22c55e}
+
+.doc-body{padding:24px}
+.doc-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--gray-200);border-radius:10px;overflow:hidden;margin-bottom:20px}
+.dm-item{background:white;padding:12px 14px}
+.dm-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray-400)}
+.dm-value{font-family:'Noto Sans Devanagari',sans-serif;font-size:14.5px;font-weight:700;margin-top:2px;color:var(--gray-900)}
+.dm-value.big{font-size:16px;color:#1a56db}
+
+.section-divider{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--saffron);margin:20px 0 10px;padding-bottom:8px;border-bottom:2px solid var(--saffron-pale)}
+
+/* OWNER TABLE */
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{background:var(--gray-100);padding:9px 12px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-400);border-bottom:1.5px solid var(--gray-200)}
+tbody td{padding:10px 12px;border-bottom:1px solid var(--gray-100);color:var(--gray-800);font-family:'Noto Sans Devanagari',sans-serif}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--gray-50)}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;font-family:'Baloo 2',sans-serif}
+.badge-jirayet{background:#dbeafe;color:#1d4ed8}
+.badge-bagayat{background:#dcfce7;color:#15803d}
+.badge-area{background:var(--green-pale);color:#1a56db}
+
+/* NOTICE */
+.notice{background:var(--saffron-pale);border:1.5px solid #fed7aa;border-radius:10px;padding:16px 18px;margin-bottom:20px;display:flex;gap:12px;align-items:flex-start}
+.notice-ico{font-size:18px;flex-shrink:0}
+.notice-text{font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;color:#9a3412;line-height:1.7}
+.notice-text strong{font-weight:700;display:block;margin-bottom:2px}
+
+.empty-state{text-align:center;padding:60px 24px;color:var(--gray-400)}
+.empty-state .ico{font-size:48px;margin-bottom:12px}
+.empty-state h3{font-size:17px;font-weight:700;color:var(--gray-600);margin-bottom:6px}
+.empty-state p{font-family:'Noto Sans Devanagari',sans-serif;font-size:14px;line-height:1.7}
+
+@media(max-width:640px){.fields-row{grid-template-columns:1fr 1fr}.doc-meta{grid-template-columns:1fr 1fr}.doc-header{flex-direction:column;gap:12px}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <div class="nav-icon">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+        <path d="M10 2L3 7v9h14V7L10 2z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
+        <rect x="7" y="11" width="2.5" height="5" rx=".5" fill="white"/>
+        <rect x="10.5" y="11" width="2.5" height="5" rx=".5" fill="white"/>
+      </svg>
+    </div>
+    <span class="nav-title">Prints<span>Hubh</span></span>
+  </a>
+  <a class="back-btn" href="index.html">← मुख्यपृष्ठ</a>
+</nav>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="ph-label">Land Records</div>
+    <div class="ph-title">📋 ७/१२ उतारा — सातबारा</div>
+    <div class="ph-sub">गट नंबर टाकून जमिनीचा ७/१२ उतारा पाहा. खातेदाराचे नाव, क्षेत्रफळ, पिकाची माहिती, कर्जाची नोंद.</div>
+  </div>
+</div>
+
+<div class="content">
+
+  <div class="notice">
+    <div class="notice-ico">ℹ️</div>
+    <div class="notice-text">
+      <strong>अधिकृत ७/१२ साठी</strong>
+      हे portal Demo उद्देशाने आहे. अधिकृत कायदेशीर ७/१२ उताऱ्यासाठी <a href="https://mahabhumi.gov.in" target="_blank" style="color:#c2410c">mahabhumi.gov.in</a> वर जा किंवा WhatsApp वर संपर्क करा — आम्ही तुमच्यासाठी मागवतो.
+    </div>
+  </div>
+
+  <div class="form-card">
+    <div class="form-title">🔍 दस्तऐवज शोधा</div>
+
+    <div class="doc-tabs">
+      <button class="doc-tab active" onclick="setDocType(this,'712')">📋 ७/१२ उतारा</button>
+      <button class="doc-tab" id="tab8a" onclick="setDocType(this,'8a')">📑 ८अ खाते</button>
+      <button class="doc-tab" onclick="setDocType(this,'ferfar')">🔄 ई-फेरफार</button>
+    </div>
+
+    <div class="fields-row">
+      <div class="field">
+        <label>जिल्हा</label>
+        <select id="distSel" onchange="loadTalukas()">
+          <option value="">-- जिल्हा --</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>तालुका</label>
+        <select id="talukaSel" disabled onchange="loadVillages()">
+          <option value="">-- तालुका --</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>गाव</label>
+        <select id="villageSel" disabled onchange="checkReady()">
+          <option value="">-- गाव --</option>
+        </select>
+      </div>
+      <div class="field">
+        <label id="numLabel">गट नंबर</label>
+        <input type="text" id="surveyNum" placeholder="उदा. 123 / 45A" disabled oninput="checkReady()">
+      </div>
+    </div>
+
+    <button class="btn-fetch" id="fetchBtn" disabled onclick="fetchDocument()">
+      🔍 उतारा पाहा
+    </button>
+  </div>
+
+  <!-- DOCUMENT OUTPUT -->
+  <div id="docOutput">
+    <div class="empty-state">
+      <div class="ico">📋</div>
+      <h3>उतारा पाहण्यासाठी</h3>
+      <p>वरून जिल्हा, तालुका, गाव निवडा<br>आणि गट नंबर टाकून "उतारा पाहा" वर क्लिक करा.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let ALL_DATA = {};
+let docType = '712';
+
+async function init() {
+  try {
+    const res = await fetch('all_districts.json');
+    ALL_DATA = await res.json();
+  } catch(e) { return; }
+
+  const DIST_MARATHI = {
+    'THANE':'ठाणे','PALGHAR':'पालघर','RAIGAD':'रायगड','RATNAGIRI':'रत्नागिरी','SINDHUDURG':'सिंधुदुर्ग',
+    'PUNE':'पुणे','SATARA':'सातारा','SANGLI':'सांगली','SOLAPUR':'सोलापूर','KOLHAPUR':'कोल्हापूर',
+    'NASHIK':'नाशिक','DHULE':'धुळे','NANDURBAR':'नंदूरबार','JALGAON':'जळगाव','AHMEDNAGAR':'अहमदनगर',
+    'CHHATRAPATI SAMBHAJINAGAR':'छत्रपती संभाजीनगर','JALNA':'जालना','PARBHANI':'परभणी',
+    'HINGOLI':'हिंगोली','BEED':'बीड','NANDED':'नांदेड','DHARASHIV':'धाराशिव','LATUR':'लातूर',
+    'AMRAVATI':'अमरावती','BULDHANA':'बुलढाणा','AKOLA':'अकोला','WASHIM':'वाशिम','YAVATMAL':'यवतमाळ',
+    'NAGPUR':'नागपूर','WARDHA':'वर्धा','BHANDARA':'भंडारा','GONDIA':'गोंदिया',
+    'CHANDRAPUR':'चंद्रपूर','GADCHIROLI':'गडचिरोली'
+  };
+
+  const sel = document.getElementById('distSel');
+  Object.keys(ALL_DATA).sort().forEach(d => {
+    const opt = document.createElement('option');
+    opt.value = d;
+    opt.textContent = `${DIST_MARATHI[d]||d}`;
+    sel.appendChild(opt);
+  });
+
+  // URL params
+  const p = new URLSearchParams(location.search);
+  if(p.get('district')) { sel.value = p.get('district'); loadTalukas(); }
+  if(p.get('village')) { /* will be set after cascade */ }
+  if(location.hash === '#8a') setDocType(document.getElementById('tab8a'), '8a');
+}
+
+function loadTalukas() {
+  const d = document.getElementById('distSel').value;
+  const tSel = document.getElementById('talukaSel');
+  tSel.innerHTML = '<option value="">-- तालुका --</option>';
+  tSel.disabled = !d;
+  document.getElementById('villageSel').innerHTML = '<option value="">-- गाव --</option>';
+  document.getElementById('villageSel').disabled = true;
+  document.getElementById('surveyNum').disabled = true;
+  document.getElementById('fetchBtn').disabled = true;
+  if(!d) return;
+  Object.keys(ALL_DATA[d]).forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t; opt.textContent = t;
+    tSel.appendChild(opt);
+  });
+  const p = new URLSearchParams(location.search);
+  if(p.get('taluka')) { tSel.value = p.get('taluka'); loadVillages(); }
+}
+
+function loadVillages() {
+  const d = document.getElementById('distSel').value;
+  const t = document.getElementById('talukaSel').value;
+  const vSel = document.getElementById('villageSel');
+  vSel.innerHTML = '<option value="">-- गाव --</option>';
+  vSel.disabled = !t;
+  document.getElementById('surveyNum').disabled = true;
+  if(!t) return;
+  (ALL_DATA[d][t]||[]).forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v; opt.textContent = v;
+    vSel.appendChild(opt);
+  });
+  const p = new URLSearchParams(location.search);
+  if(p.get('village')) { vSel.value = p.get('village'); checkReady(); }
+}
+
+function checkReady() {
+  const d = document.getElementById('distSel').value;
+  const t = document.getElementById('talukaSel').value;
+  const v = document.getElementById('villageSel').value;
+  const s = document.getElementById('surveyNum').value.trim();
+  document.getElementById('surveyNum').disabled = !v;
+  document.getElementById('fetchBtn').disabled = !(d && t && v && s);
+}
+
+function setDocType(el, type) {
+  document.querySelectorAll('.doc-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  docType = type;
+  document.getElementById('numLabel').textContent = type === '8a' ? 'खाते नंबर' : 'गट नंबर';
+  document.getElementById('surveyNum').placeholder = type === '8a' ? 'उदा. 123' : 'उदा. 45 / 12A';
+}
+
+function fetchDocument() {
+  const district = document.getElementById('distSel').value;
+  const taluka   = document.getElementById('talukaSel').value;
+  const village  = document.getElementById('villageSel').value;
+  const num      = document.getElementById('surveyNum').value.trim();
+
+  // Generate realistic demo data
+  const owners = generateOwners(village, num);
+  const area = (Math.random() * 2 + 0.5).toFixed(2);
+  const year = 2023 + Math.floor(Math.random() * 2);
+
+  if(docType === '712') render712(district, taluka, village, num, owners, area, year);
+  else if(docType === '8a') render8a(district, taluka, village, num, owners, area, year);
+  else renderFerfar(district, taluka, village, num);
+}
+
+function generateOwners(village, num) {
+  const names = ['रामचंद्र विठ्ठलराव पाटील','सुनीता रमेश शिंदे','महादेव बाळकृष्ण जाधव','लक्ष्मीबाई नामदेव कदम','विजयकुमार सोपानराव देशमुख'];
+  const n = 1 + Math.floor(Math.random() * 2);
+  return names.slice(0, n).map((name,i) => ({
+    name,
+    khate: `${Math.floor(Math.random()*900)+100}`,
+    share: n === 1 ? 'पूर्ण' : ['१/२','१/२','१/३','१/३','१/३'][i],
+    type: Math.random() > 0.5 ? 'जिरायत' : 'बागायत'
+  }));
+}
+
+function render712(district, taluka, village, num, owners, area, year) {
+  const waMsg = encodeURIComponent(`PrintsHubh — 7/12 उतारा\nजिल्हा: ${district}\nतालुका: ${taluka}\nगाव: ${village}\nगट नंबर: ${num}\n\nPrint मागवायचे आहे.`);
+  const out = document.getElementById('docOutput');
+  out.innerHTML = `
+    <div class="satbara-wrap show">
+      <div class="doc-header">
+        <div class="doc-header-left">
+          <div class="doc-type">भूमी अभिलेख — महाराष्ट्र</div>
+          <div class="doc-title">सातबारा उतारा (Form ७/१२)</div>
+        </div>
+        <div class="doc-actions-bar">
+          <button class="doc-act-btn" onclick="window.print()">🖨️ Print</button>
+          <a href="https://wa.me/917083811355?text=${waMsg}" class="doc-act-btn wa-btn" target="_blank">💬 WhatsApp Print</a>
+        </div>
+      </div>
+      <div class="doc-body">
+        <div class="doc-meta">
+          <div class="dm-item"><div class="dm-label">जिल्हा</div><div class="dm-value">${district}</div></div>
+          <div class="dm-item"><div class="dm-label">तालुका</div><div class="dm-value">${taluka}</div></div>
+          <div class="dm-item"><div class="dm-label">गाव</div><div class="dm-value">${village}</div></div>
+          <div class="dm-item"><div class="dm-label">गट नंबर</div><div class="dm-value big">${num}</div></div>
+          <div class="dm-item"><div class="dm-label">एकूण क्षेत्र (हे.आर.)</div><div class="dm-value big">${area} हे.</div></div>
+          <div class="dm-item"><div class="dm-label">वर्ष</div><div class="dm-value">${year}-${(year+1).toString().slice(2)}</div></div>
+        </div>
+
+        <div class="section-divider">भाग - १ : जमिनीची माहिती</div>
+        <table style="margin-bottom:20px">
+          <thead><tr><th>खातेदाराचे नाव</th><th>खाते नंबर</th><th>हिस्सा</th><th>जमिनीचा प्रकार</th></tr></thead>
+          <tbody>
+            ${owners.map(o => `<tr><td>${o.name}</td><td>${o.khate}</td><td>${o.share}</td><td><span class="badge badge-${o.type==='जिरायत'?'jirayet':'bagayat'}">${o.type}</span></td></tr>`).join('')}
+          </tbody>
+        </table>
+
+        <div class="section-divider">भाग - २ : पिकाची माहिती</div>
+        <table style="margin-bottom:20px">
+          <thead><tr><th>पिकाचे नाव</th><th>क्षेत्रफळ (हे.आर.)</th><th>हंगाम</th><th>सिंचन</th></tr></thead>
+          <tbody>
+            <tr><td>ज्वारी</td><td>${(parseFloat(area)*0.6).toFixed(2)} हे.</td><td>रब्बी</td><td>कोरडवाहू</td></tr>
+            <tr><td>गहू</td><td>${(parseFloat(area)*0.4).toFixed(2)} हे.</td><td>रब्बी</td><td>बागायत</td></tr>
+          </tbody>
+        </table>
+
+        <div class="section-divider">भाग - ३ : कर्ज / भार</div>
+        <table>
+          <thead><tr><th>कर्जाचा प्रकार</th><th>बँक/संस्था</th><th>रक्कम</th><th>स्थिती</th></tr></thead>
+          <tbody>
+            <tr><td colspan="4" style="text-align:center;color:var(--gray-400);font-style:italic">या गट नंबरवर कोणताही भार नोंद नाही</td></tr>
+          </tbody>
+        </table>
+
+        <div style="margin-top:20px;padding:14px;background:var(--gray-50);border-radius:8px;border:1px solid var(--gray-200);font-size:12px;color:var(--gray-400);font-family:'Noto Sans Devanagari',sans-serif;line-height:1.7">
+          ⚠️ हा उतारा Demo/Preview उद्देशाने आहे. अधिकृत कायदेशीर कागदपत्रासाठी महाभूमी पोर्टलवर जा.<br>
+          अधिकृत कागदपत्र Print साठी WhatsApp करा: <strong>+91 70838 11355</strong>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function render8a(district, taluka, village, num, owners, area, year) {
+  const out = document.getElementById('docOutput');
+  out.innerHTML = `
+    <div class="satbara-wrap show">
+      <div class="doc-header">
+        <div class="doc-header-left">
+          <div class="doc-type">भूमी अभिलेख — महाराष्ट्र</div>
+          <div class="doc-title">८अ खाते उतारा</div>
+        </div>
+        <div class="doc-actions-bar">
+          <button class="doc-act-btn" onclick="window.print()">🖨️ Print</button>
+        </div>
+      </div>
+      <div class="doc-body">
+        <div class="doc-meta">
+          <div class="dm-item"><div class="dm-label">जिल्हा</div><div class="dm-value">${district}</div></div>
+          <div class="dm-item"><div class="dm-label">तालुका</div><div class="dm-value">${taluka}</div></div>
+          <div class="dm-item"><div class="dm-label">गाव</div><div class="dm-value">${village}</div></div>
+          <div class="dm-item"><div class="dm-label">खाते नंबर</div><div class="dm-value big">${num}</div></div>
+          <div class="dm-item"><div class="dm-label">खातेदाराचे नाव</div><div class="dm-value">${owners[0].name}</div></div>
+          <div class="dm-item"><div class="dm-label">वर्ष</div><div class="dm-value">${year}-${(year+1).toString().slice(2)}</div></div>
+        </div>
+        <div class="section-divider">खात्यातील सर्व गट नंबर</div>
+        <table>
+          <thead><tr><th>गट नंबर</th><th>क्षेत्रफळ</th><th>जमिनीचा प्रकार</th><th>पीक</th></tr></thead>
+          <tbody>
+            ${[num, Math.floor(Math.random()*200+1)+'', Math.floor(Math.random()*200+1)+''].map(g => `
+            <tr><td><strong>${g}</strong></td><td>${(Math.random()+0.3).toFixed(2)} हे.</td><td>जिरायत</td><td>ज्वारी</td></tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function renderFerfar(district, taluka, village, num) {
+  const out = document.getElementById('docOutput');
+  out.innerHTML = `
+    <div class="satbara-wrap show">
+      <div class="doc-header" style="background:linear-gradient(135deg,#1d4ed8,#2563eb)">
+        <div class="doc-header-left">
+          <div class="doc-type">भूमी अभिलेख — महाराष्ट्र</div>
+          <div class="doc-title">ई-फेरफार नोंद</div>
+        </div>
+      </div>
+      <div class="doc-body">
+        <div class="doc-meta">
+          <div class="dm-item"><div class="dm-label">जिल्हा</div><div class="dm-value">${district}</div></div>
+          <div class="dm-item"><div class="dm-label">तालुका</div><div class="dm-value">${taluka}</div></div>
+          <div class="dm-item"><div class="dm-label">गाव</div><div class="dm-value">${village}</div></div>
+          <div class="dm-item"><div class="dm-label">गट नंबर</div><div class="dm-value big">${num}</div></div>
+          <div class="dm-item"><div class="dm-label">फेरफार नंबर</div><div class="dm-value">${Math.floor(Math.random()*999)+100}/${new Date().getFullYear()}</div></div>
+          <div class="dm-item"><div class="dm-label">स्थिती</div><div class="dm-value"><span class="badge badge-bagayat">अंतिम</span></div></div>
+        </div>
+        <div class="section-divider">फेरफार तपशील</div>
+        <table>
+          <thead><tr><th>विवरण</th><th>जुनी नोंद</th><th>नवीन नोंद</th></tr></thead>
+          <tbody>
+            <tr><td>खातेदार</td><td>रामचंद्र पाटील</td><td>सुनीता रमेश शिंदे</td></tr>
+            <tr><td>व्यवहाराचा प्रकार</td><td colspan="2">वारसाहक्काने हस्तांतर</td></tr>
+            <tr><td>नोंद दिनांक</td><td colspan="2">०१/०४/२०२४</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+init();
+</script>
+</body>
+</html>

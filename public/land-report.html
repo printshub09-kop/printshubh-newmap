@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Land Boundary Report — PrintsHubh.shop</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+<style>
+:root{
+  --blue:#1a56db;--blue-dk:#1040b0;--blue-lt:#eff6ff;
+  --g50:#f8fafc;--g200:#e2e8f0;--g400:#94a3b8;--g500:#64748b;
+  --g700:#334155;--g900:#0f172a;--wa:#25d366;
+  --green:#16a34a;--red:#dc2626;--gold:#FFD700;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--g50);color:var(--g900)}
+
+/* NAV */
+nav{background:#fff;border-bottom:1px solid var(--g200);height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;position:sticky;top:0;z-index:999;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.logo{display:flex;align-items:center;gap:9px;text-decoration:none}
+.logo-box{width:36px;height:36px;background:linear-gradient(135deg,var(--blue),var(--blue-dk));border-radius:9px;display:flex;align-items:center;justify-content:center}
+.logo-box svg{width:20px;height:20px}
+.logo-name{font-size:18px;font-weight:800}.logo-name span{color:var(--blue)}
+.nav-tag{font-size:11px;font-weight:700;background:#dcfce7;color:var(--green);padding:4px 11px;border-radius:20px;border:1px solid #bbf7d0;display:flex;align-items:center;gap:5px}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* LAYOUT */
+.wrap{max-width:960px;margin:20px auto;padding:0 16px}
+h1{font-size:23px;font-weight:800;margin-bottom:4px}
+.sub{font-family:'Noto Sans Devanagari',sans-serif;font-size:14px;color:var(--g500);margin-bottom:18px}
+
+/* STEPS BANNER */
+.steps{background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 60%,var(--blue) 100%);border-radius:13px;padding:13px 18px;margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.step{display:flex;align-items:center;gap:7px;color:rgba(255,255,255,.9);font-size:13px;font-weight:600}
+.step-n{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.18);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-arr{color:rgba(255,255,255,.35);font-size:14px}
+
+/* FORM CARD */
+.card{background:#fff;border-radius:13px;border:1.5px solid var(--g200);padding:20px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.card-head{font-size:12px;font-weight:800;color:var(--g700);text-transform:uppercase;letter-spacing:.5px;margin-bottom:13px}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:11px}
+.fg{display:flex;flex-direction:column;gap:4px}
+.fg label{font-size:11px;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.4px}
+.fg input,.fg select{padding:9px 12px;border:1.5px solid var(--g200);border-radius:8px;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;color:var(--g900);outline:none;transition:border-color .15s;background:#fff}
+.fg input:focus,.fg select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,86,219,.08)}
+
+/* LAYER BUTTONS */
+.layers{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.lbtn{display:flex;align-items:center;gap:6px;padding:7px 13px;border-radius:8px;border:1.5px solid var(--g200);background:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;color:var(--g700);transition:all .15s}
+.lbtn.on{border-color:var(--blue);background:var(--blue-lt);color:var(--blue)}
+.ldot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+
+/* STATUS */
+.status{display:none;align-items:center;gap:9px;padding:11px 14px;border-radius:9px;margin-top:12px;font-size:13px;font-weight:600;line-height:1.5}
+.s-l{background:#eff6ff;border:1px solid #bfdbfe;color:var(--blue);display:flex}
+.s-ok{background:#dcfce7;border:1px solid #bbf7d0;color:var(--green);display:flex}
+.s-err{background:#fee2e2;border:1px solid #fecaca;color:var(--red);display:flex}
+.spin{width:15px;height:15px;border:2px solid rgba(26,86,219,.2);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* GO BUTTON */
+.go-btn{width:100%;margin-top:13px;padding:13px;background:linear-gradient(135deg,var(--blue),var(--blue-dk));color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(26,86,219,.25);transition:all .15s}
+.go-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(26,86,219,.3)}
+
+/* MAP */
+.map-wrap{position:relative;border-radius:13px;overflow:hidden;border:1.5px solid var(--g200);box-shadow:0 2px 12px rgba(0,0,0,.08);margin-bottom:14px}
+#map{width:100%;height:570px;background:#0f172a}
+
+/* COMPASS */
+.cmps{position:absolute;pointer-events:none;z-index:400;font-weight:900;font-size:13px;color:#fff;text-shadow:0 0 12px #000,0 0 6px #000;letter-spacing:1px}
+.N{top:11px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:1px}
+.S{bottom:11px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:1px}
+.E{right:11px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:3px}
+.W{left:11px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:3px}
+.arrow{font-size:17px;line-height:1}
+
+/* MAP OVERLAYS */
+.map-badge{position:absolute;top:10px;right:10px;z-index:400;background:rgba(0,0,0,.72);backdrop-filter:blur(8px);padding:6px 12px;border-radius:8px;display:flex;align-items:center;gap:6px}
+.mb-dot{width:6px;height:6px;border-radius:50%;background:#34d399;animation:blink 1.5s infinite}
+.mb-txt{font-size:11px;font-weight:700;color:#fff}
+.legend{position:absolute;bottom:30px;right:10px;z-index:400;background:rgba(0,0,0,.72);backdrop-filter:blur(8px);border-radius:10px;padding:10px 13px}
+.leg-t{font-size:10px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px}
+.leg-r{display:flex;align-items:center;gap:7px;font-size:12px;color:rgba(255,255,255,.8);font-weight:600;margin-bottom:4px}
+.leg-r:last-child{margin-bottom:0}
+.leg-l{width:20px;height:3px;border-radius:2px}
+
+/* ZOOM HINT */
+.zoom-hint{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:400;background:rgba(0,0,0,.72);backdrop-filter:blur(8px);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;color:#fff;white-space:nowrap;pointer-events:none;transition:opacity .3s}
+
+/* CLICK INFO */
+.click-info{background:#fff;border-radius:12px;border:1.5px solid var(--g200);padding:18px;margin-bottom:14px;display:none;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.ci-head{font-size:14px;font-weight:800;color:var(--g700);margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.ci-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px;margin-bottom:14px}
+.ci-item{background:var(--g50);border-radius:8px;padding:9px 11px}
+.ci-lbl{font-size:10px;color:var(--g400);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px}
+.ci-val{font-size:14px;font-weight:700;color:var(--g900)}
+.gen-btn{width:100%;padding:12px;background:linear-gradient(135deg,var(--blue),var(--blue-dk));color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 3px 10px rgba(26,86,219,.2);transition:all .15s}
+.gen-btn:hover{transform:translateY(-1px)}
+
+/* ACTION BAR */
+.action-bar{display:none;gap:11px;margin-bottom:14px;flex-wrap:wrap}
+.btn-print{flex:1;min-width:140px;padding:12px;background:var(--blue);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;transition:background .15s}
+.btn-print:hover{background:var(--blue-dk)}
+.btn-wa{flex:1;min-width:140px;padding:12px;background:var(--wa);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;transition:filter .15s}
+.btn-wa:hover{filter:brightness(1.06)}
+
+/* ═══ PRINT REPORT ═══════════════════════════════════════ */
+#report{display:none;background:#fff;border-radius:13px;border:1.5px solid var(--g200);overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);margin-bottom:14px}
+.r-head{background:linear-gradient(135deg,var(--g900) 0%,#1e3a8a 55%,var(--blue) 100%);padding:16px 22px;display:flex;align-items:center;justify-content:space-between}
+.r-brand .r-name{font-size:20px;font-weight:900;color:#fff}.r-brand .r-name span{color:#93c5fd}
+.r-brand .r-sub{font-size:10px;color:rgba(255,255,255,.55);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.r-src{display:inline-flex;align-items:center;gap:5px;background:rgba(22,163,74,.25);border:1px solid rgba(22,163,74,.4);padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;color:#34d399;margin-top:5px}
+.r-meta{text-align:right;font-size:12px;color:rgba(255,255,255,.75);line-height:1.9}
+.r-meta strong{color:#fff}
+
+#rmap{width:100%;height:490px;background:#0f172a}
+
+.r-tables{padding:16px 20px}
+.r-main{width:100%;border-collapse:collapse;margin-bottom:12px}
+.r-main th{background:var(--g900);color:#fff;padding:8px 12px;font-size:12px;font-weight:700;text-align:center}
+.r-main td{padding:8px 12px;text-align:center;font-size:13px;border:1px solid var(--g200)}
+.r-main tr:nth-child(even) td{background:var(--g50)}
+
+.r-3col{display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:0;border:1px solid var(--g200);border-radius:10px;overflow:hidden;margin-bottom:12px}
+.r-col-hd{background:var(--g900);color:#fff;padding:8px 12px;font-size:11px;font-weight:700;text-align:center;text-transform:uppercase;letter-spacing:.4px}
+.r-row{padding:7px 12px;border-top:1px solid var(--g200);display:flex;justify-content:space-between;align-items:center;font-size:12px}
+.r-row .l{color:var(--g500);font-size:11px;font-weight:600}
+.r-row .v{font-weight:700;color:var(--g900)}
+.r-row .vb{font-weight:700;color:var(--blue)}
+.r-disc{background:#fffbeb;border-top:1px solid #fde68a;padding:11px 20px;font-size:11px;color:#78350f;line-height:1.7}
+
+/* PRINT MEDIA */
+@media print{
+  nav,.card,.action-bar,h1,.sub,.steps,.click-info,.map-wrap,.status{display:none!important}
+  .wrap{margin:0;padding:0;max-width:100%}
+  #report{display:block!important;border:none;border-radius:0;box-shadow:none;margin:0}
+  body{background:#fff}
+  .r-head,.r-col-hd,.r-main th,.r-disc{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #rmap{height:500px}
+}
+@media(max-width:600px){
+  nav{padding:0 14px}
+  .r-3col{grid-template-columns:1fr}
+  #map{height:450px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" href="#">
+    <div class="logo-box">
+      <svg viewBox="0 0 22 22" fill="none">
+        <path d="M11 2.5L4 8v11h14V8L11 2.5z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/>
+        <rect x="7.5" y="12" width="3" height="7" rx="1" fill="white"/>
+        <rect x="11.5" y="12" width="3" height="7" rx="1" fill="white"/>
+      </svg>
+    </div>
+    <span class="logo-name">Prints<span>Hubh</span>.shop</span>
+  </a>
+  <div class="nav-tag"><div class="nav-dot"></div>🛰️ ISRO Bhuvan Live</div>
+</nav>
+
+<div class="wrap">
+  <h1>📍 Land Boundary Report</h1>
+  <p class="sub">Esri Satellite + ISRO Bhuvan Cadastral — GPS टाका, plot शोधा, Report print करा</p>
+
+  <!-- STEPS -->
+  <div class="steps">
+    <div class="step"><div class="step-n">1</div>Location / GPS टाका</div>
+    <div class="step-arr">→</div>
+    <div class="step"><div class="step-n">2</div>Satellite + Cadastral Map</div>
+    <div class="step-arr">→</div>
+    <div class="step"><div class="step-n">3</div>Map वर Click करा</div>
+    <div class="step-arr">→</div>
+    <div class="step"><div class="step-n">4</div>Report Print / WhatsApp</div>
+  </div>
+
+  <!-- FORM -->
+  <div class="card">
+    <div class="card-head">📋 जमीन माहिती टाका</div>
+    <div class="form-grid">
+      <div class="fg">
+        <label>जिल्हा (District)</label>
+        <select id="distSel" onchange="onDistChange()">
+          <option value="">-- जिल्हा निवडा --</option>
+          <option value="20.0112,73.7898">नाशिक</option>
+          <option value="18.5204,73.8567">पुणे</option>
+          <option value="19.2183,73.0955">ठाणे</option>
+          <option value="19.0760,72.8777">मुंबई</option>
+          <option value="19.6970,72.7697">पालघर</option>
+          <option value="18.1148,73.7580">रायगड</option>
+          <option value="17.0010,73.2997">रत्नागिरी</option>
+          <option value="16.4126,73.7701">सिंधुदुर्ग</option>
+          <option value="18.5204,73.8567">पुणे</option>
+          <option value="17.6599,75.9064">सोलापूर</option>
+          <option value="17.6868,74.0183">सातारा</option>
+          <option value="16.8524,74.5815">सांगली</option>
+          <option value="16.7050,74.2433">कोल्हापूर</option>
+          <option value="19.9975,75.3189">छ.संभाजीनगर</option>
+          <option value="19.7216,77.1490">हिंगोली</option>
+          <option value="19.5204,76.5667">परभणी</option>
+          <option value="19.1383,77.3210">नांदेड</option>
+          <option value="19.8762,75.3433">बीड</option>
+          <option value="18.3956,76.7857">धाराशिव</option>
+          <option value="18.4088,76.5604">लातूर</option>
+          <option value="19.7515,75.7139">जालना</option>
+          <option value="19.0950,74.7380">अहमदनगर</option>
+          <option value="21.0077,76.1631">बुलढाणा</option>
+          <option value="20.7096,77.7264">अकोला</option>
+          <option value="20.1120,77.3101">वाशीम</option>
+          <option value="20.7002,77.0082">अमरावती</option>
+          <option value="20.9320,78.1215">यवतमाळ</option>
+          <option value="20.7503,78.6022">वर्धा</option>
+          <option value="21.1458,79.0882">नागपूर</option>
+          <option value="21.3462,79.6523">भंडारा</option>
+          <option value="21.4600,80.1964">गोंदिया</option>
+          <option value="19.9615,79.2961">चंद्रपूर</option>
+          <option value="20.1809,80.0049">गडचिरोली</option>
+          <option value="21.0125,75.5626">जळगाव</option>
+          <option value="21.0000,74.7473">धुळे</option>
+          <option value="21.3686,74.2389">नंदूरबार</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Latitude (GPS)</label>
+        <input type="text" id="inLat" placeholder="उदा: 21.0082">
+      </div>
+      <div class="fg">
+        <label>Longitude (GPS)</label>
+        <input type="text" id="inLng" placeholder="उदा: 76.1631">
+      </div>
+      <div class="fg">
+        <label>Survey / गट नंबर</label>
+        <input type="text" id="inSurvey" placeholder="उदा: 9, 45/2, 123A">
+      </div>
+      <div class="fg">
+        <label>गाव (Village)</label>
+        <input type="text" id="inVillage" placeholder="उदा: Chikhali">
+      </div>
+      <div class="fg">
+        <label>तालुका</label>
+        <input type="text" id="inTaluka" placeholder="उदा: Malkapur">
+      </div>
+    </div>
+
+    <!-- LAYER TOGGLES -->
+    <div style="margin-top:12px">
+      <div style="font-size:11px;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px">Map Layers — Toggle करा</div>
+      <div class="layers">
+        <button class="lbtn on" id="lb-esri" onclick="toggleLayer('esri')">
+          <div class="ldot" style="background:#f59e0b"></div>🛰️ Esri Satellite
+        </button>
+        <button class="lbtn on" id="lb-cad" onclick="toggleLayer('cad')">
+          <div class="ldot" style="background:#ff4444"></div>📐 Bhuvan Cadastral
+        </button>
+        <button class="lbtn" id="lb-osm" onclick="toggleLayer('osm')">
+          <div class="ldot" style="background:#3b82f6"></div>🗺️ OpenStreetMap
+        </button>
+        <button class="lbtn" id="lb-topo" onclick="toggleLayer('topo')">
+          <div class="ldot" style="background:#10b981"></div>🏔️ Topo Map
+        </button>
+      </div>
+    </div>
+
+    <div id="statusBar" class="status"></div>
+    <button class="go-btn" onclick="goToMap()">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      Map वर शोधा — Cadastral Boundary दाखवा
+    </button>
+  </div>
+
+  <!-- MAP -->
+  <div class="map-wrap">
+    <div id="map"></div>
+    <!-- Compass -->
+    <div class="cmps N"><span class="arrow">↑</span>NORTH</div>
+    <div class="cmps S"><span class="arrow">↓</span>SOUTH</div>
+    <div class="cmps E">EAST<span class="arrow">→</span></div>
+    <div class="cmps W"><span class="arrow">←</span>WEST</div>
+    <!-- Badges -->
+    <div class="map-badge"><div class="mb-dot"></div><span class="mb-txt">ISRO Bhuvan + Esri Live</span></div>
+    <!-- Zoom hint -->
+    <div class="zoom-hint" id="zoomHint">🔍 Zoom in करा — Cadastral boundaries दिसतील</div>
+    <!-- Legend -->
+    <div class="legend">
+      <div class="leg-t">Legend</div>
+      <div class="leg-r"><div class="leg-l" style="background:#ff4444"></div>Cadastral Boundary</div>
+      <div class="leg-r"><div class="leg-l" style="background:var(--gold)"></div>Selected Plot</div>
+      <div class="leg-r"><div class="leg-l" style="background:#34d399"></div>Your Location</div>
+    </div>
+  </div>
+
+  <!-- CLICK INFO BOX -->
+  <div class="click-info" id="clickInfo">
+    <div class="ci-head">📍 Selected Location — Details</div>
+    <div class="ci-grid" id="ciGrid"></div>
+    <button class="gen-btn" onclick="generateReport()">
+      📄 Report Generate करा — Print करा / PDF Download
+    </button>
+  </div>
+
+  <!-- ACTION BAR -->
+  <div class="action-bar" id="actionBar">
+    <button class="btn-print" onclick="window.print()">🖨️ Print / PDF Download</button>
+    <a id="waBtn" href="#" class="btn-wa" target="_blank">💬 WhatsApp Order पाठवा</a>
+  </div>
+
+  <!-- PRINT REPORT -->
+  <div id="report">
+    <div class="r-head">
+      <div class="r-brand">
+        <div class="r-name">Prints<span>Hubh</span>.shop</div>
+        <div class="r-sub">Maharashtra Land Report Service</div>
+        <div class="r-src">✓ ISRO Bhuvan + Esri Satellite</div>
+      </div>
+      <div class="r-meta">
+        <div id="rptDate"></div>
+        <strong>WhatsApp: +91 70838 11355</strong>
+        <div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:1px">bhuvan.nrsc.gov.in | esri.com</div>
+      </div>
+    </div>
+
+    <!-- PRINT MAP -->
+    <div style="position:relative">
+      <div id="rmap"></div>
+      <div class="cmps N" style="position:absolute"><span class="arrow">↑</span>NORTH</div>
+      <div class="cmps S" style="position:absolute"><span class="arrow">↓</span>SOUTH</div>
+      <div class="cmps E" style="position:absolute">EAST<span class="arrow">→</span></div>
+      <div class="cmps W" style="position:absolute"><span class="arrow">←</span>WEST</div>
+    </div>
+
+    <!-- TABLES -->
+    <div class="r-tables">
+      <table class="r-main">
+        <tr><th>Survey No.</th><th>Village</th><th>Taluka</th><th>District</th><th>State</th></tr>
+        <tr>
+          <td id="t-survey">—</td>
+          <td id="t-village">—</td>
+          <td id="t-taluka">—</td>
+          <td id="t-district">—</td>
+          <td>Maharashtra</td>
+        </tr>
+      </table>
+
+      <div class="r-3col">
+        <div>
+          <div class="r-col-hd">📍 GPS Coordinates</div>
+          <div class="r-row"><span class="l">Latitude</span><span class="vb" id="t-lat">—</span></div>
+          <div class="r-row"><span class="l">Longitude</span><span class="vb" id="t-lng">—</span></div>
+          <div class="r-row"><span class="l">Zoom Level</span><span class="v" id="t-zoom">—</span></div>
+          <div class="r-row"><span class="l">Accuracy</span><span class="v">GPS Based</span></div>
+        </div>
+        <div>
+          <div class="r-col-hd">🗺️ Map Data Source</div>
+          <div class="r-row"><span class="l">Satellite</span><span class="v">Esri World Imagery</span></div>
+          <div class="r-row"><span class="l">Cadastral</span><span class="v">ISRO Bhuvan WMS</span></div>
+          <div class="r-row"><span class="l">Server</span><span class="v">bhuvan-vec2.nrsc.gov.in</span></div>
+          <div class="r-row"><span class="l">Layer</span><span class="v">cadastral (WMS 1.1.1)</span></div>
+        </div>
+        <div>
+          <div class="r-col-hd">📋 Report Info</div>
+          <div class="r-row"><span class="l">Date</span><span class="v" id="t-date2">—</span></div>
+          <div class="r-row"><span class="l">Service</span><span class="v">PrintsHubh.shop</span></div>
+          <div class="r-row"><span class="l">WhatsApp</span><span class="vb">+91 70838 11355</span></div>
+          <div class="r-row"><span class="l">Type</span><span class="v">Land Boundary Report</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="r-disc">
+      <strong>Disclaimer:</strong> Cadastral boundaries sourced from ISRO Bhuvan (bhuvan.nrsc.gov.in) and satellite imagery from Esri. Boundaries are indicative and may not reflect latest ground changes. This report is for information purposes only — not for legal use. Official records: mahabhumi.gov.in | +91 70838 11355
+    </div>
+  </div><!-- end report -->
+
+</div><!-- end wrap -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+// ═══ MAP INITIALIZATION ════════════════════════════════════
+const map = L.map('map', { zoomControl: true }).setView([19.7515, 75.7139], 8);
+
+// All available tile layers
+const LAYERS = {
+  esri: L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    { attribution: 'Esri, Maxar', maxZoom: 20 }
+  ),
+  osm: L.tileLayer(
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    { attribution: '© OpenStreetMap', maxZoom: 19 }
+  ),
+  topo: L.tileLayer(
+    'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+    { attribution: '© OpenTopoMap', maxZoom: 17 }
+  ),
+  // ✅ ISRO Bhuvan WMS — Confirmed working!
+  cad: L.tileLayer.wms(
+    'https://bhuvan-vec2.nrsc.gov.in/bhuvan/ows',
+    {
+      layers: 'cadastral',
+      format: 'image/png',
+      transparent: true,
+      version: '1.1.1',
+      opacity: 0.85,
+      attribution: 'ISRO Bhuvan Cadastral'
+    }
+  )
+};
+
+const layerOn = { esri: true, cad: true, osm: false, topo: false };
+
+// Add default layers
+LAYERS.esri.addTo(map);
+LAYERS.cad.addTo(map);
+
+// ═══ LAYER TOGGLE ══════════════════════════════════════════
+function toggleLayer(name) {
+  layerOn[name] = !layerOn[name];
+  const btn = document.getElementById('lb-' + name);
+  if (layerOn[name]) {
+    LAYERS[name].addTo(map);
+    btn.classList.add('on');
+    // Keep cadastral on top always
+    if (layerOn.cad) LAYERS.cad.bringToFront();
+  } else {
+    map.removeLayer(LAYERS[name]);
+    btn.classList.remove('on');
+  }
+}
+
+// ═══ ZOOM HINT ════════════════════════════════════════════
+const zHint = document.getElementById('zoomHint');
+map.on('zoomend', function() {
+  const z = map.getZoom();
+  if (z < 13) {
+    zHint.style.opacity = '1';
+    zHint.textContent = `🔍 Zoom in करा (${z}/13+) — Cadastral boundaries दिसतील`;
+  } else {
+    zHint.style.opacity = '0';
+    showStatus('ok', `✅ Zoom ${z} — Cadastral boundaries visible! Plot वर click करा.`);
+  }
+});
+
+// ═══ DISTRICT DROPDOWN ════════════════════════════════════
+function onDistChange() {
+  const val = document.getElementById('distSel').value;
+  if (!val) return;
+  const [lat, lng] = val.split(',');
+  document.getElementById('inLat').value = lat;
+  document.getElementById('inLng').value = lng;
+}
+
+// ═══ GO TO LOCATION ═══════════════════════════════════════
+let locMarker = null;
+
+function goToMap() {
+  const lat = parseFloat(document.getElementById('inLat').value);
+  const lng = parseFloat(document.getElementById('inLng').value);
+
+  if (isNaN(lat) || isNaN(lng)) {
+    showStatus('err', '⚠️ Latitude आणि Longitude टाका. उदा: 21.0082 आणि 76.1631');
+    return;
+  }
+  if (lat < 15 || lat > 23.5 || lng < 72 || lng > 81) {
+    showStatus('err', '⚠️ Maharashtra GPS coordinates असणे आवश्यक (Lat: 15–23, Lng: 72–81)');
+    return;
+  }
+
+  showStatus('load', '⏳ Map navigate होत आहे... Bhuvan Cadastral tiles load होत आहेत...');
+
+  if (locMarker) map.removeLayer(locMarker);
+
+  // Fly to location — zoom 16 for cadastral visibility
+  map.flyTo([lat, lng], 16, { duration: 1.8 });
+
+  // Green location marker
+  locMarker = L.marker([lat, lng], {
+    icon: L.divIcon({
+      className: '',
+      html: `<div style="background:#16a34a;color:white;font-size:12px;font-weight:800;padding:5px 11px;border-radius:8px;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,.4);border:2px solid white">📍 Location</div>`,
+      iconAnchor: [42, 20]
+    })
+  }).addTo(map);
+
+  setTimeout(() => {
+    showStatus('ok', '✅ Map तयार! लाल रेषा = Bhuvan Cadastral boundaries. Plot वर click करा!');
+  }, 2500);
+
+  document.getElementById('actionBar').style.display = 'flex';
+}
+
+// ═══ MAP CLICK HANDLER ════════════════════════════════════
+let clickMarker = null;
+let selectedLatLng = null;
+
+map.on('click', function(e) {
+  const lat = e.latlng.lat;
+  const lng = e.latlng.lng;
+  selectedLatLng = { lat, lng };
+
+  const survey = document.getElementById('inSurvey').value || '?';
+  const village = document.getElementById('inVillage').value || '?';
+  const taluka = document.getElementById('inTaluka').value || '?';
+
+  // Remove old click marker
+  if (clickMarker) map.removeLayer(clickMarker);
+
+  // Gold survey marker
+  clickMarker = L.marker([lat, lng], {
+    icon: L.divIcon({
+      className: '',
+      html: `<div style="background:rgba(0,0,0,.85);color:#FFD700;font-size:13px;font-weight:900;padding:5px 10px;border-radius:8px;white-space:nowrap;border:2px solid #FFD700;box-shadow:0 2px 10px rgba(0,0,0,.5)">${survey !== '?' ? 'Survey ' + survey : '📍 Selected'}</div>`,
+      iconAnchor: [55, 18]
+    })
+  }).addTo(map);
+
+  // Fill click info box
+  const box = document.getElementById('clickInfo');
+  const grid = document.getElementById('ciGrid');
+  box.style.display = 'block';
+  grid.innerHTML = `
+    <div class="ci-item"><div class="ci-lbl">Latitude</div><div class="ci-val">${lat.toFixed(6)}</div></div>
+    <div class="ci-item"><div class="ci-lbl">Longitude</div><div class="ci-val">${lng.toFixed(6)}</div></div>
+    <div class="ci-item"><div class="ci-lbl">Survey No.</div><div class="ci-val">${survey}</div></div>
+    <div class="ci-item"><div class="ci-lbl">Village</div><div class="ci-val">${village}</div></div>
+    <div class="ci-item"><div class="ci-lbl">Taluka</div><div class="ci-val">${taluka}</div></div>
+    <div class="ci-item"><div class="ci-lbl">Map Zoom</div><div class="ci-val">${map.getZoom()}</div></div>
+  `;
+
+  box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+});
+
+// ═══ GENERATE REPORT ══════════════════════════════════════
+let reportMap = null;
+
+function generateReport() {
+  const ll = selectedLatLng || {
+    lat: parseFloat(document.getElementById('inLat').value) || 19.7515,
+    lng: parseFloat(document.getElementById('inLng').value) || 75.7139
+  };
+
+  const survey  = document.getElementById('inSurvey').value  || '—';
+  const village = document.getElementById('inVillage').value || '—';
+  const taluka  = document.getElementById('inTaluka').value  || '—';
+  const distSel = document.getElementById('distSel');
+  const district = distSel.options[distSel.selectedIndex]?.text || '—';
+  const dateStr = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+
+  // Fill report fields
+  document.getElementById('t-survey').textContent   = survey;
+  document.getElementById('t-village').textContent  = village;
+  document.getElementById('t-taluka').textContent   = taluka;
+  document.getElementById('t-district').textContent = district !== '-- जिल्हा निवडा --' ? district : '—';
+  document.getElementById('t-lat').textContent      = ll.lat.toFixed(6);
+  document.getElementById('t-lng').textContent      = ll.lng.toFixed(6);
+  document.getElementById('t-zoom').textContent     = map.getZoom();
+  document.getElementById('t-date2').textContent    = dateStr;
+  document.getElementById('rptDate').textContent    = dateStr;
+
+  // Show report + actions
+  document.getElementById('report').style.display = 'block';
+  document.getElementById('actionBar').style.display = 'flex';
+
+  // Init print map
+  setTimeout(() => {
+    if (reportMap) { reportMap.remove(); reportMap = null; }
+    reportMap = L.map('rmap', { zoomControl: false, attributionControl: false })
+      .setView([ll.lat, ll.lng], map.getZoom());
+
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 20 }).addTo(reportMap);
+    L.tileLayer.wms('https://bhuvan-vec2.nrsc.gov.in/bhuvan/ows', {
+      layers: 'cadastral', format: 'image/png', transparent: true, version: '1.1.1', opacity: 0.85
+    }).addTo(reportMap);
+
+    if (survey !== '—') {
+      L.marker([ll.lat, ll.lng], {
+        icon: L.divIcon({
+          className: '',
+          html: `<div style="background:rgba(0,0,0,.85);color:#FFD700;font-weight:900;font-size:15px;padding:5px 10px;border-radius:7px;border:2px solid #FFD700;white-space:nowrap">${survey}</div>`,
+          iconAnchor: [22, 16]
+        })
+      }).addTo(reportMap);
+    }
+  }, 300);
+
+  // WhatsApp message
+  const waText = encodeURIComponent(
+    `📍 Land Report Request\n` +
+    `Survey No: ${survey}\n` +
+    `Village: ${village}, ${taluka}\n` +
+    `District: ${district}\n` +
+    `GPS: ${ll.lat.toFixed(5)}, ${ll.lng.toFixed(5)}\n\n` +
+    `PrintsHubh.shop | +91 70838 11355`
+  );
+  document.getElementById('waBtn').href = `https://wa.me/917083811355?text=${waText}`;
+
+  showStatus('ok', '✅ Report तयार! Print करा किंवा WhatsApp वर order पाठवा.');
+  document.getElementById('actionBar').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ═══ STATUS HELPER ════════════════════════════════════════
+function showStatus(type, msg) {
+  const bar = document.getElementById('statusBar');
+  bar.className = 'status s-' + type;
+  bar.innerHTML = (type === 'load' ? '<div class="spin"></div>' : '') + msg;
+  bar.style.display = 'flex';
+}
+
+// ═══ INIT ═════════════════════════════════════════════════
+setTimeout(() => showStatus('ok', '✅ Map ready! Location टाका → Zoom in करा → Cadastral boundaries दिसतील'), 600);
+
+// Expose functions globally for onclick attributes
+window.toggleLayer   = toggleLayer;
+window.onDistChange  = onDistChange;
+window.goToMap       = goToMap;
+window.generateReport = generateReport;
+
+}); // end DOMContentLoaded
+</script>
+</body>
+</html>

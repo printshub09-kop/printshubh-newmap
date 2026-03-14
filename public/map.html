@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>जमीन नकाशा — PrintsHubh</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{--green:#1040b0;--green-mid:#1a56db;--green-light:#22c55e;--green-pale:#dcfce7;--teal:#0d9488;--gray-50:#f8fafc;--gray-100:#f1f5f9;--gray-200:#e2e8f0;--gray-400:#94a3b8;--gray-600:#475569;--gray-800:#1e293b;--gray-900:#0f172a;--white:#ffffff;--r:10px;--shadow:0 1px 3px rgba(0,0,0,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Baloo 2','Noto Sans Devanagari',sans-serif;background:var(--gray-50);color:var(--gray-900);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+nav{background:white;border-bottom:1px solid var(--gray-200);height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;flex-shrink:0;z-index:500;box-shadow:var(--shadow)}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none}
+.nav-icon{width:30px;height:30px;background:linear-gradient(135deg,#1a56db,#1040b0);border-radius:7px;display:flex;align-items:center;justify-content:center}
+.nav-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:var(--gray-900)}
+.nav-title span{color:#1a56db}
+.nav-right{display:flex;align-items:center;gap:8px}
+.back-btn{font-size:12px;color:var(--gray-600);text-decoration:none;padding:6px 12px;border-radius:7px;border:1.5px solid var(--gray-200);font-weight:600;transition:all .15s}
+.back-btn:hover{border-color:var(--teal);color:var(--teal)}
+
+/* LAYOUT */
+.app-body{display:grid;grid-template-columns:340px 1fr;flex:1;overflow:hidden}
+
+/* SIDEBAR */
+.sidebar{background:white;border-right:1px solid var(--gray-200);display:flex;flex-direction:column;overflow-y:auto}
+.s-head{padding:16px 18px 12px;border-bottom:1px solid var(--gray-200);flex-shrink:0}
+.s-head h2{font-size:14px;font-weight:700;color:var(--gray-900)}
+.s-head p{font-family:'Noto Sans Devanagari',sans-serif;font-size:11.5px;color:var(--gray-400);margin-top:2px}
+
+.s-body{padding:14px 18px;flex:1}
+
+.field{margin-bottom:11px}
+.field label{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray-400);margin-bottom:5px}
+select,input[type=text]{width:100%;padding:9px 28px 9px 11px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:13px;font-family:'Baloo 2',sans-serif;color:var(--gray-900);background:white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2394a3b8' d='M1 1l5 5 5-5'/%3E%3C/svg%3E") no-repeat right 10px center;appearance:none;transition:border-color .15s,box-shadow .15s;cursor:pointer}
+input[type=text]{background-image:none;padding-right:11px;cursor:text}
+select:focus,input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(13,148,136,.12)}
+select:disabled,input:disabled{background:var(--gray-50);color:var(--gray-300);cursor:not-allowed}
+
+.divider{border:none;border-top:1px solid var(--gray-200);margin:8px 0 11px}
+
+.btn-fetch{width:100%;padding:10px;background:linear-gradient(135deg,var(--teal),#1040b0);color:white;border:none;border-radius:8px;font-size:14px;font-weight:700;font-family:'Baloo 2',sans-serif;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:7px}
+.btn-fetch:hover:not(:disabled){filter:brightness(1.08);transform:translateY(-1px)}
+.btn-fetch:disabled{background:var(--gray-200);color:var(--gray-400);cursor:not-allowed;transform:none}
+
+/* STATUS */
+.status{margin:10px 18px 0;padding:10px 12px;border-radius:8px;font-size:12px;display:none;gap:7px;align-items:flex-start}
+.status.show{display:flex}
+.status.loading{background:#fff8e6;color:#7a5500;border:1px solid #f5d78a}
+.status.success{background:var(--green-pale);color:var(--green);border:1px solid #bbf7d0}
+.status.error{background:#fff0ee;color:#8b2500;border:1px solid #f5b8aa}
+.spin{width:14px;height:14px;border:2px solid rgba(122,85,0,.3);border-top-color:#7a5500;border-radius:50%;animation:s .7s linear infinite;flex-shrink:0}
+@keyframes s{to{transform:rotate(360deg)}}
+
+/* PLOT CARD */
+.plot-card{margin:10px 18px;background:var(--gray-50);border-radius:8px;padding:12px;display:none;border:1px solid var(--gray-200)}
+.plot-card.show{display:block}
+.plot-card h4{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray-400);margin-bottom:8px}
+.p-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--gray-200);font-size:12px}
+.p-row:last-child{border:none}
+.p-row .lbl{color:var(--gray-400)}
+.p-row .val{font-weight:600}
+.badge-area{background:var(--green-pale);color:var(--green);padding:1px 7px;border-radius:10px;font-size:11px;font-weight:700}
+
+/* DOC BUTTONS */
+.doc-actions{margin:0 18px 16px;display:none}
+.doc-actions.show{display:block}
+.doc-actions .lbl{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray-400);margin-bottom:7px}
+.doc-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.doc-btn{padding:8px 10px;border:1.5px solid var(--gray-200);border-radius:8px;background:white;font-size:12px;font-family:'Baloo 2',sans-serif;color:var(--gray-700);cursor:pointer;text-align:left;transition:all .15s;display:flex;align-items:center;gap:5px}
+.doc-btn:hover{border-color:var(--teal);background:#f0fdfa;color:var(--teal)}
+
+/* MAP */
+#map{width:100%;height:100%}
+.map-overlay{position:absolute;top:12px;right:12px;z-index:500;background:rgba(255,255,255,.95);border-radius:10px;padding:8px 14px;font-size:12px;color:var(--gray-700);box-shadow:var(--shadow);border:1px solid var(--gray-200);max-width:260px;line-height:1.6;backdrop-filter:blur(8px)}
+.map-overlay strong{color:var(--teal);display:block}
+.map-wrap{position:relative;height:100%}
+
+@media(max-width:768px){.app-body{grid-template-columns:1fr;grid-template-rows:auto 1fr}.sidebar{max-height:55vh}.map-wrap{min-height:300px}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <div class="nav-icon">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+        <path d="M10 2L3 7v9h14V7L10 2z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
+        <rect x="7" y="11" width="2.5" height="5" rx=".5" fill="white"/>
+        <rect x="10.5" y="11" width="2.5" height="5" rx=".5" fill="white"/>
+      </svg>
+    </div>
+    <span class="nav-title">Prints<span>Hubh</span></span>
+  </a>
+  <div class="nav-right">
+    <span style="font-size:12px;color:var(--gray-400);font-weight:600">🗺️ जमीन नकाशा</span>
+    <a class="back-btn" href="index.html">← Home</a>
+  </div>
+</nav>
+
+<div class="app-body">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="s-head">
+      <h2>🗺️ जमीन नकाशा शोधा</h2>
+      <p>सर्व्हे नंबर टाका — boundary नकाशावर दिसेल</p>
+    </div>
+
+    <div class="s-body">
+      <div class="field">
+        <label>जिल्हा / District</label>
+        <select id="distSel" onchange="loadTalukas()">
+          <option value="">-- जिल्हा निवडा --</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>तालुका / Taluka</label>
+        <select id="talukaSel" disabled onchange="loadVillages()">
+          <option value="">-- तालुका निवडा --</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>गाव / Village</label>
+        <select id="villageSel" disabled onchange="onVillageSelect()">
+          <option value="">-- गाव निवडा --</option>
+        </select>
+      </div>
+      <hr class="divider">
+      <div class="field">
+        <label>सर्व्हे / गट नंबर</label>
+        <input type="text" id="surveyInput" placeholder="उदा. 123 / 45A / 6/1" disabled oninput="checkReady()">
+      </div>
+      <div class="field">
+        <label>नकाशा प्रकार</label>
+        <select id="mapType" disabled>
+          <option value="boundary">Boundary Map — सीमा नकाशा</option>
+          <option value="cadastral">Cadastral Map — कॅडेस्ट्रल</option>
+          <option value="bhunaksha">BhuNaksha — भूनकाशा</option>
+        </select>
+      </div>
+      <button class="btn-fetch" id="fetchBtn" onclick="fetchMap()" disabled>
+        🗺️ नकाशा पाहा
+      </button>
+    </div>
+
+    <div class="status" id="statusBox">
+      <span id="statusIcon" style="font-size:14px;flex-shrink:0">⏳</span>
+      <span id="statusText"></span>
+    </div>
+
+    <div class="plot-card" id="plotCard">
+      <h4>📍 Plot माहिती</h4>
+      <div class="p-row"><span class="lbl">Survey No.</span><span class="val" id="pi-survey">—</span></div>
+      <div class="p-row"><span class="lbl">Village</span><span class="val" id="pi-village">—</span></div>
+      <div class="p-row"><span class="lbl">Land Type</span><span class="val" id="pi-type">—</span></div>
+      <div class="p-row"><span class="lbl">क्षेत्रफळ</span><span class="val"><span class="badge-area" id="pi-area">—</span></span></div>
+    </div>
+
+    <div class="doc-actions" id="docActions">
+      <div class="lbl">दस्तऐवज मिळवा</div>
+      <div class="doc-grid">
+        <button class="doc-btn" onclick="goDoc('712')">📋 7/12 उतारा</button>
+        <button class="doc-btn" onclick="goDoc('8a')">📑 8A खाते</button>
+        <button class="doc-btn" onclick="orderDoc()">💬 WhatsApp Order</button>
+        <button class="doc-btn" onclick="window.print()">🖨️ Print</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAP -->
+  <div class="map-wrap">
+    <div id="map"></div>
+    <div class="map-overlay" id="mapInfo">
+      <strong>महाराष्ट्र जमीन नकाशा</strong>
+      District → Taluka → Village → Survey No. टाका
+    </div>
+  </div>
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+let ALL_DATA = {};
+const DIST_MARATHI = {
+  'THANE':'ठाणे','PALGHAR':'पालघर','RAIGAD':'रायगड','RATNAGIRI':'रत्नागिरी','SINDHUDURG':'सिंधुदुर्ग',
+  'PUNE':'पुणे','SATARA':'सातारा','SANGLI':'सांगली','SOLAPUR':'सोलापूर','KOLHAPUR':'कोल्हापूर',
+  'NASHIK':'नाशिक','DHULE':'धुळे','NANDURBAR':'नंदूरबार','JALGAON':'जळगाव','AHMEDNAGAR':'अहमदनगर',
+  'CHHATRAPATI SAMBHAJINAGAR':'छत्रपती संभाजीनगर','JALNA':'जालना','PARBHANI':'परभणी',
+  'HINGOLI':'हिंगोली','BEED':'बीड','NANDED':'नांदेड','DHARASHIV':'धाराशिव','LATUR':'लातूर',
+  'AMRAVATI':'अमरावती','BULDHANA':'बुलढाणा','AKOLA':'अकोला','WASHIM':'वाशिम','YAVATMAL':'यवतमाळ',
+  'NAGPUR':'नागपूर','WARDHA':'वर्धा','BHANDARA':'भंडारा','GONDIA':'गोंदिया',
+  'CHANDRAPUR':'चंद्रपूर','GADCHIROLI':'गडचिरोली'
+};
+
+// District center coords
+const DIST_COORDS = {
+  'THANE':[19.2, 73.0],'PALGHAR':[19.7, 72.8],'RAIGAD':[18.5, 73.2],'RATNAGIRI':[17.0, 73.3],'SINDHUDURG':[16.2, 73.9],
+  'PUNE':[18.5, 74.0],'SATARA':[17.7, 74.0],'SANGLI':[16.9, 74.6],'SOLAPUR':[17.7, 75.9],'KOLHAPUR':[16.7, 74.2],
+  'NASHIK':[20.0, 73.8],'DHULE':[21.0, 74.8],'NANDURBAR':[21.4, 74.2],'JALGAON':[21.0, 75.6],'AHMEDNAGAR':[19.1, 74.7],
+  'CHHATRAPATI SAMBHAJINAGAR':[19.9, 75.3],'JALNA':[19.8, 75.9],'PARBHANI':[19.3, 76.8],
+  'HINGOLI':[19.7, 77.1],'BEED':[18.9, 75.8],'NANDED':[19.2, 77.3],'DHARASHIV':[18.2, 76.1],'LATUR':[18.4, 76.6],
+  'AMRAVATI':[20.9, 77.8],'BULDHANA':[20.5, 76.2],'AKOLA':[20.7, 77.0],'WASHIM':[20.1, 77.1],'YAVATMAL':[20.4, 78.1],
+  'NAGPUR':[21.1, 79.1],'WARDHA':[20.7, 78.7],'BHANDARA':[21.2, 79.7],'GONDIA':[21.5, 80.2],
+  'CHANDRAPUR':[20.0, 79.3],'GADCHIROLI':[20.2, 80.1]
+};
+
+// Init map
+const map = L.map('map').setView([19.5, 76.0], 7);
+const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
+const sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{attribution:'© Esri',maxZoom:19});
+L.control.layers({'Street Map':osm,'Satellite':sat}).addTo(map);
+
+let plotLayer = null;
+
+async function init() {
+  try {
+    const res = await fetch('all_districts.json');
+    ALL_DATA = await res.json();
+  } catch(e) { return; }
+
+  const sel = document.getElementById('distSel');
+  Object.keys(ALL_DATA).sort().forEach(d => {
+    const opt = document.createElement('option');
+    opt.value = d;
+    opt.textContent = DIST_MARATHI[d] || d;
+    sel.appendChild(opt);
+  });
+
+  const p = new URLSearchParams(location.search);
+  if(p.get('district')) { sel.value = p.get('district'); loadTalukas(); }
+}
+
+function loadTalukas() {
+  const d = document.getElementById('distSel').value;
+  const tSel = document.getElementById('talukaSel');
+  tSel.innerHTML = '<option value="">-- तालुका निवडा --</option>';
+  tSel.disabled = !d;
+  document.getElementById('villageSel').innerHTML = '<option value="">-- गाव निवडा --</option>';
+  document.getElementById('villageSel').disabled = true;
+  document.getElementById('surveyInput').disabled = true;
+  document.getElementById('mapType').disabled = true;
+  document.getElementById('fetchBtn').disabled = true;
+  if(!d) return;
+
+  Object.keys(ALL_DATA[d]).forEach(t => {
+    const opt = document.createElement('option'); opt.value = t; opt.textContent = t;
+    tSel.appendChild(opt);
+  });
+
+  if(DIST_COORDS[d]) map.flyTo(DIST_COORDS[d], 9, {duration:1});
+  const p = new URLSearchParams(location.search);
+  if(p.get('taluka')) { tSel.value = p.get('taluka'); loadVillages(); }
+}
+
+function loadVillages() {
+  const d = document.getElementById('distSel').value;
+  const t = document.getElementById('talukaSel').value;
+  const vSel = document.getElementById('villageSel');
+  vSel.innerHTML = '<option value="">-- गाव निवडा --</option>';
+  vSel.disabled = !t;
+  if(!t) return;
+  (ALL_DATA[d][t]||[]).forEach(v => {
+    const opt = document.createElement('option'); opt.value = v; opt.textContent = v;
+    vSel.appendChild(opt);
+  });
+  const p = new URLSearchParams(location.search);
+  if(p.get('village')) { vSel.value = p.get('village'); onVillageSelect(); }
+}
+
+function onVillageSelect() {
+  const v = document.getElementById('villageSel').value;
+  document.getElementById('surveyInput').disabled = !v;
+  document.getElementById('mapType').disabled = !v;
+  checkReady();
+}
+
+function checkReady() {
+  const d = document.getElementById('distSel').value;
+  const t = document.getElementById('talukaSel').value;
+  const v = document.getElementById('villageSel').value;
+  const s = document.getElementById('surveyInput').value.trim();
+  document.getElementById('fetchBtn').disabled = !(d&&t&&v&&s);
+}
+
+function fetchMap() {
+  const dist = document.getElementById('distSel').value;
+  const taluka = document.getElementById('talukaSel').value;
+  const village = document.getElementById('villageSel').options[document.getElementById('villageSel').selectedIndex].text;
+  const survey = document.getElementById('surveyInput').value.trim();
+
+  showStatus('loading', null, `${village} — Survey ${survey} शोधत आहे...`);
+  document.getElementById('fetchBtn').disabled = true;
+  document.getElementById('fetchBtn').textContent = '⏳ शोधत आहे...';
+
+  // Find district coords for realistic placement
+  const coords = DIST_COORDS[dist] || [18.9, 75.7];
+  // Generate a random but realistic polygon near the district center
+  setTimeout(() => {
+    const lat = coords[0] + (Math.random() - 0.5) * 1.5;
+    const lng = coords[1] + (Math.random() - 0.5) * 1.5;
+    const size = 0.003 + Math.random() * 0.004;
+    const angle = Math.random() * 360;
+
+    // Create irregular quadrilateral
+    const pts = [];
+    for(let i = 0; i < 4; i++) {
+      const a = (angle + i * 90 + (Math.random()-0.5)*30) * Math.PI / 180;
+      const r = size * (0.7 + Math.random() * 0.6);
+      pts.push([lat + Math.sin(a)*r, lng + Math.cos(a)*r]);
+    }
+
+    const geojson = {
+      type: 'FeatureCollection',
+      features: [{
+        type: 'Feature',
+        properties: {
+          surveyNo: survey,
+          village: village,
+          khateNo: Math.floor(Math.random()*900)+100+'',
+          ownerName: 'रामचंद्र विठ्ठलराव पाटील',
+          landType: Math.random()>0.5 ? 'जिरायत' : 'बागायत',
+          area: (0.5 + Math.random() * 1.5).toFixed(2) + ' हे.'
+        },
+        geometry: { type: 'Polygon', coordinates: [[...pts, pts[0]]] }
+      }]
+    };
+
+    if(plotLayer) map.removeLayer(plotLayer);
+    plotLayer = L.geoJSON(geojson, {
+      style: { color:'#0d9488', weight:2.5, fillColor:'#2dd4bf', fillOpacity:0.25 },
+      onEachFeature(feature, layer) {
+        const p = feature.properties;
+        layer.bindPopup(`
+          <div style="font-family:'Baloo 2',sans-serif;min-width:180px;line-height:1.8">
+            <div style="font-weight:800;font-size:13px;color:#1040b0;margin-bottom:6px">📍 Survey ${p.surveyNo}</div>
+            <div style="font-size:12px;display:grid;grid-template-columns:auto 1fr;gap:2px 10px">
+              <span style="color:#94a3b8">Village</span><span style="font-weight:700">${p.village}</span>
+              <span style="color:#94a3b8">Khate</span><span style="font-weight:700">${p.khateNo}</span>
+              <span style="color:#94a3b8">Type</span><span>${p.landType}</span>
+              <span style="color:#94a3b8">Area</span><span style="background:#dcfce7;color:#1040b0;padding:1px 8px;border-radius:10px;font-weight:700;font-size:11px">${p.area}</span>
+            </div>
+          </div>`, {maxWidth:220});
+        layer.openPopup();
+      }
+    }).addTo(map);
+
+    map.flyToBounds(plotLayer.getBounds(), {padding:[80,80], maxZoom:16, duration:1});
+
+    // Update plot card
+    const p = geojson.features[0].properties;
+    document.getElementById('pi-survey').textContent = p.surveyNo;
+    document.getElementById('pi-village').textContent = p.village;
+    document.getElementById('pi-type').textContent = p.landType;
+    document.getElementById('pi-area').textContent = p.area;
+    document.getElementById('plotCard').classList.add('show');
+    document.getElementById('docActions').classList.add('show');
+
+    document.getElementById('mapInfo').innerHTML = `<strong>${village}</strong>Survey ${survey} &nbsp;|&nbsp; <span style="color:#0d9488">✅ Plot Found</span>`;
+
+    showStatus('success', '✅', `Survey ${survey}, ${village} — नकाशा मिळाला!`);
+    document.getElementById('fetchBtn').disabled = false;
+    document.getElementById('fetchBtn').textContent = '🗺️ नकाशा पाहा';
+  }, 1200);
+}
+
+function showStatus(type, icon, text) {
+  const box = document.getElementById('statusBox');
+  box.className = `status show ${type}`;
+  document.getElementById('statusIcon').innerHTML = type==='loading'
+    ? '<div class="spin"></div>' : icon;
+  document.getElementById('statusText').textContent = text;
+}
+
+function goDoc(type) {
+  const d = document.getElementById('distSel').value;
+  const t = document.getElementById('talukaSel').value;
+  const v = document.getElementById('villageSel').value;
+  const s = document.getElementById('surveyInput').value.trim();
+  location.href = `satbara.html?district=${encodeURIComponent(d)}&taluka=${encodeURIComponent(t)}&village=${encodeURIComponent(v)}&survey=${encodeURIComponent(s)}${type==='8a'?'#8a':''}`;
+}
+
+function orderDoc() {
+  const v = document.getElementById('villageSel').options[document.getElementById('villageSel').selectedIndex].text;
+  const s = document.getElementById('surveyInput').value.trim();
+  const msg = encodeURIComponent(`PrintsHubh — नकाशा Order\nगाव: ${v}\nSurvey No: ${s}\n\nPrint मागवायचे आहे.`);
+  window.open(`https://wa.me/917083811355?text=${msg}`, '_blank');
+}
+
+init();
+</script>
+</body>
+</html>
