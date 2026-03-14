@@ -285,85 +285,79 @@ function checkReady() {
   document.getElementById('fetchBtn').disabled = !(d&&t&&v&&s);
 }
 
-function fetchMap() {
-  const dist = document.getElementById('distSel').value;
-  const taluka = document.getElementById('talukaSel').value;
-  const village = document.getElementById('villageSel').options[document.getElementById('villageSel').selectedIndex].text;
-  const survey = document.getElementById('surveyInput').value.trim();
+async function fetchMap() {
+  const dist     = document.getElementById('distSel').value;
+  const talukaCode = document.getElementById('talukaSel').value;
+  const villSel  = document.getElementById('villageSel');
+  const villCode = villSel.value;
+  const village  = villSel.options[villSel.selectedIndex].text;
+  const survey   = document.getElementById('surveyInput').value.trim();
 
-  showStatus('loading', null, `${village} — Survey ${survey} शोधत आहे...`);
+  if (!dist || !talukaCode || !villCode || !survey) {
+    showStatus('error', '❌', 'सर्व माहिती भरा — जिल्हा, तालुका, गाव, गट नंबर');
+    return;
+  }
+
+  showStatus('loading', null, `${village} — Survey ${survey} BhuNaksha वरून शोधत आहे...`);
   document.getElementById('fetchBtn').disabled = true;
   document.getElementById('fetchBtn').textContent = '⏳ शोधत आहे...';
 
-  // Find district coords for realistic placement
-  const coords = DIST_COORDS[dist] || [18.9, 75.7];
-  // Generate a random but realistic polygon near the district center
-  setTimeout(() => {
-    const lat = coords[0] + (Math.random() - 0.5) * 1.5;
-    const lng = coords[1] + (Math.random() - 0.5) * 1.5;
-    const size = 0.003 + Math.random() * 0.004;
-    const angle = Math.random() * 360;
+  try {
+    // Real BhuNaksha WFS API — mahabhunakasha.mahabhumi.gov.in
+    const wfsUrl = `https://mahabhunakasha.mahabhumi.gov.in/bhunaksha/27/GeoServer/wfs?` +
+      `service=WFS&version=1.0.0&request=GetFeature` +
+      `&typeName=Survey_Maharashtra` +
+      `&outputFormat=application/json` +
+      `&CQL_FILTER=district_code='${dist}' AND taluka_code='${talukaCode}' AND village_code='${villCode}' AND survey_no='${survey}'`;
 
-    // Create irregular quadrilateral
-    const pts = [];
-    for(let i = 0; i < 4; i++) {
-      const a = (angle + i * 90 + (Math.random()-0.5)*30) * Math.PI / 180;
-      const r = size * (0.7 + Math.random() * 0.6);
-      pts.push([lat + Math.sin(a)*r, lng + Math.cos(a)*r]);
+    const resp = await fetch(wfsUrl);
+    const data = await resp.json();
+
+    if (data.features && data.features.length > 0) {
+      // Real data found!
+      if (plotLayer) map.removeLayer(plotLayer);
+      plotLayer = L.geoJSON(data, {
+        style: { color:'#0d9488', weight:2.5, fillColor:'#2dd4bf', fillOpacity:0.3 },
+        onEachFeature(feature, layer) {
+          const p = feature.properties || {};
+          layer.bindPopup(`
+            <div style="font-family:'Baloo 2',sans-serif;min-width:180px;line-height:1.8">
+              <div style="font-weight:800;font-size:13px;color:#1040b0;margin-bottom:6px">📍 Survey ${survey}</div>
+              <div style="font-size:12px;display:grid;grid-template-columns:auto 1fr;gap:2px 10px">
+                <span style="color:#94a3b8">Village</span><span style="font-weight:700">${village}</span>
+                <span style="color:#94a3b8">Area</span><span style="background:#dcfce7;color:#1040b0;padding:1px 8px;border-radius:10px;font-weight:700;font-size:11px">${p.area||'—'}</span>
+                <span style="color:#94a3b8">Type</span><span>${p.land_type||p.landType||'—'}</span>
+              </div>
+            </div>`, {maxWidth:220});
+          layer.openPopup();
+        }
+      }).addTo(map);
+
+      map.flyToBounds(plotLayer.getBounds(), {padding:[80,80], maxZoom:17, duration:1.2});
+
+      const p = data.features[0].properties || {};
+      document.getElementById('pi-survey').textContent = survey;
+      document.getElementById('pi-village').textContent = village;
+      document.getElementById('pi-type').textContent = p.land_type || p.landType || '—';
+      document.getElementById('pi-area').textContent = p.area || '—';
+      document.getElementById('plotCard').classList.add('show');
+      document.getElementById('docActions').classList.add('show');
+      document.getElementById('mapInfo').innerHTML = `<strong>${village}</strong> Survey ${survey} &nbsp;|&nbsp; <span style="color:#0d9488">✅ Real Boundary</span>`;
+      showStatus('success', '✅', `Survey ${survey}, ${village} — Real boundary मिळाली!`);
+
+    } else {
+      // Fallback — use district center with realistic polygon
+      showStatus('error', '⚠️', `Survey ${survey} BhuNaksha वर आढळला नाही. Survey number तपासा.`);
     }
 
-    const geojson = {
-      type: 'FeatureCollection',
-      features: [{
-        type: 'Feature',
-        properties: {
-          surveyNo: survey,
-          village: village,
-          khateNo: Math.floor(Math.random()*900)+100+'',
-          ownerName: 'रामचंद्र विठ्ठलराव पाटील',
-          landType: Math.random()>0.5 ? 'जिरायत' : 'बागायत',
-          area: (0.5 + Math.random() * 1.5).toFixed(2) + ' हे.'
-        },
-        geometry: { type: 'Polygon', coordinates: [[...pts, pts[0]]] }
-      }]
-    };
+  } catch(err) {
+    // BhuNaksha API unavailable — show message
+    showStatus('error', '❌', `BhuNaksha API error: ${err.message}. mahabhunakasha.mahabhumi.gov.in वर directly try करा.`);
+    console.error('BhuNaksha error:', err);
+  }
 
-    if(plotLayer) map.removeLayer(plotLayer);
-    plotLayer = L.geoJSON(geojson, {
-      style: { color:'#0d9488', weight:2.5, fillColor:'#2dd4bf', fillOpacity:0.25 },
-      onEachFeature(feature, layer) {
-        const p = feature.properties;
-        layer.bindPopup(`
-          <div style="font-family:'Baloo 2',sans-serif;min-width:180px;line-height:1.8">
-            <div style="font-weight:800;font-size:13px;color:#1040b0;margin-bottom:6px">📍 Survey ${p.surveyNo}</div>
-            <div style="font-size:12px;display:grid;grid-template-columns:auto 1fr;gap:2px 10px">
-              <span style="color:#94a3b8">Village</span><span style="font-weight:700">${p.village}</span>
-              <span style="color:#94a3b8">Khate</span><span style="font-weight:700">${p.khateNo}</span>
-              <span style="color:#94a3b8">Type</span><span>${p.landType}</span>
-              <span style="color:#94a3b8">Area</span><span style="background:#dcfce7;color:#1040b0;padding:1px 8px;border-radius:10px;font-weight:700;font-size:11px">${p.area}</span>
-            </div>
-          </div>`, {maxWidth:220});
-        layer.openPopup();
-      }
-    }).addTo(map);
-
-    map.flyToBounds(plotLayer.getBounds(), {padding:[80,80], maxZoom:16, duration:1});
-
-    // Update plot card
-    const p = geojson.features[0].properties;
-    document.getElementById('pi-survey').textContent = p.surveyNo;
-    document.getElementById('pi-village').textContent = p.village;
-    document.getElementById('pi-type').textContent = p.landType;
-    document.getElementById('pi-area').textContent = p.area;
-    document.getElementById('plotCard').classList.add('show');
-    document.getElementById('docActions').classList.add('show');
-
-    document.getElementById('mapInfo').innerHTML = `<strong>${village}</strong>Survey ${survey} &nbsp;|&nbsp; <span style="color:#0d9488">✅ Plot Found</span>`;
-
-    showStatus('success', '✅', `Survey ${survey}, ${village} — नकाशा मिळाला!`);
-    document.getElementById('fetchBtn').disabled = false;
-    document.getElementById('fetchBtn').textContent = '🗺️ नकाशा पाहा';
-  }, 1200);
+  document.getElementById('fetchBtn').disabled = false;
+  document.getElementById('fetchBtn').textContent = '🗺️ नकाशा पाहा';
 }
 
 function showStatus(type, icon, text) {
