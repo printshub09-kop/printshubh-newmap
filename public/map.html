@@ -272,9 +272,34 @@ function loadVillages() {
 
 function onVillageSelect() {
   const v = document.getElementById('villageSel').value;
+  const village = document.getElementById('villageSel').options[document.getElementById('villageSel').selectedIndex].text;
+  const distSel = document.getElementById('distSel');
+  const dist = distSel.options[distSel.selectedIndex].text;
   document.getElementById('surveyInput').disabled = !v;
   document.getElementById('mapType').disabled = !v;
   checkReady();
+
+  window._villageCoords = null; // Reset when new village loads
+  if (v && village) {
+    const query = `${village}, ${dist}, Maharashtra, India`;
+    const GKEY = 'AIzaSyBq7YJBQgiBMoCU5zF4-PSwYUIK6_nRZNo';
+    fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(query)}&key=${GKEY}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.status === 'OK' && data.results.length > 0) {
+          const loc = data.results[0].geometry.location;
+          window._villageCoords = [loc.lat, loc.lng];
+          map.flyTo([loc.lat, loc.lng], 14, {duration: 1.2});
+        } else {
+          const dc = DIST_COORDS[document.getElementById('distSel').value];
+          if (dc) map.flyTo(dc, 12, {duration: 1});
+        }
+      })
+      .catch(() => {
+        const dc = DIST_COORDS[document.getElementById('distSel').value];
+        if (dc) map.flyTo(dc, 12, {duration: 1});
+      });
+  }
 }
 
 function checkReady() {
@@ -300,9 +325,9 @@ function fetchMap() {
     return;
   }
 
-  // 1. Fly map to district center — show Bhuvan WMS cadastral
-  const coords = DIST_COORDS[dist] || [19.0, 75.7];
-  map.flyTo(coords, 14, {duration: 1.5});
+  // Use actual village coords if available, else district center
+  const coords = window._villageCoords || DIST_COORDS[dist] || [19.0, 75.7];
+  map.flyTo(coords, 15, {duration: 1.5});
 
   // 2. Show Bhuvan WMS cadastral layer on map
   if (!window._cadLayer) {
